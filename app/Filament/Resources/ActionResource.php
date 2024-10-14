@@ -21,25 +21,60 @@ class ActionResource extends Resource
     protected static ?int $navigationSort = 2;
     protected static ?string $navigationGroup = 'Gestión de Formación';
 
+    //Contador de Acciones existentes
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
+    }
+
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                //
-            ]);
+                Forms\Components\TextInput::make('naction')
+                    ->label('Nº Acción')
+                    ->required()
+                    ->integer()
+                    ->maxLength(6),
+                Forms\Components\TextInput::make('denomination')
+                    ->label('Denominación')
+                    ->required(),
+                Forms\Components\TextInput::make('nhours')
+                    ->label('Nº Horas')
+                    ->required()
+                    ->integer()
+                    ->maxLength(3),
+            ])
+            ->columns(3);
     }
 
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
-                //
+                Tables\Columns\TextColumn::make('naction')
+                    ->label('Nº Acción')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('denomination')
+                    ->label('Denominación')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('nhours')
+                    ->label('Nº Horas'),
+                Tables\Columns\TextColumn::make('created_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('updated_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 //
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
