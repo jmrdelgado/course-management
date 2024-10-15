@@ -19,8 +19,8 @@ class TutorResource extends Resource
 
     protected static ?string $modelLabel = 'Tutores';
     protected static ?string $navigationIcon = 'heroicon-c-academic-cap';
+    protected static ?int $navigationSort = 8;
     protected static ?string $navigationGroup = 'Gestión de Formación';
-    protected static ?int $navigationSort = 5;
 
     //Obtenemos todas de registros existentes
     public static function getNavigationBadge(): ?string

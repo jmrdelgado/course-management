@@ -19,8 +19,8 @@ class GroupCompanyResource extends Resource
 
     protected static ?string $modelLabel = 'Grupo de Empresas';
     protected static ?string $navigationIcon = 'heroicon-s-building-office-2';
-    protected static ?int $navigationSort = 4;
-    protected static ?string $navigationGroup = 'Gestión de Formación';
+    protected static ?int $navigationSort = 2;
+    protected static ?string $navigationGroup = 'Gestión de Empresas';
 
     //Obtenemos todas de registros existentes
     public static function getNavigationBadge(): ?string

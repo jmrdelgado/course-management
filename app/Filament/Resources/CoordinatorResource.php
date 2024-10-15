@@ -19,8 +19,8 @@ class CoordinatorResource extends Resource
 
     protected static ?string $modelLabel = 'Coordinadores';
     protected static ?string $navigationIcon = 'heroicon-s-identification';
+    protected static ?int $navigationSort = 9;
     protected static ?string $navigationGroup = 'Gestión de Formación';
-    protected static ?int $navigationSort = 6;
 
     //Obtenemos todas de registros existentes
     public static function getNavigationBadge(): ?string

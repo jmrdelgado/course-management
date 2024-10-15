@@ -19,8 +19,8 @@ class AgentResource extends Resource
 
     protected static ?string $modelLabel = 'Agentes Comerciales';
     protected static ?string $navigationIcon = 'heroicon-s-briefcase';
-    protected static ?string $navigationGroup = 'Gestión de Formación';
     protected static ?int $navigationSort = 7;
+    protected static ?string $navigationGroup = 'Gestión de Formación';
 
     //Contador de Acciones existentes
     public static function getNavigationBadge(): ?string

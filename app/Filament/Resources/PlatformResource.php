@@ -19,8 +19,8 @@ class PlatformResource extends Resource
     protected static ?string $model = Platform::class;
     protected static ?string $modelLabel = 'Plataformas';
     protected static ?string $navigationIcon = 'heroicon-s-computer-desktop';
-    protected static ?int $navigationSort = 3;
-    protected static ?string $navigationGroup = 'Gestión de Formación';
+    protected static ?int $navigationSort = 4;
+    protected static ?string $navigationGroup = 'Gestión de Proveedores';
 
     //Obtenemos todas de registros existentes
     public static function getNavigationBadge(): ?string

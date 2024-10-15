@@ -23,8 +23,8 @@ class CompanyResource extends Resource
 
     protected static ?string $modelLabel = 'Empresas';
     protected static ?string $navigationIcon = 'heroicon-s-building-office';
-    protected static ?int $navigationSort = 5;
-    protected static ?string $navigationGroup = 'Gestión de Formación';
+    protected static ?int $navigationSort = 3;
+    protected static ?string $navigationGroup = 'Gestión de Empresas';
 
     //Obtenemos todas de registros existentes
     public static function getNavigationBadge(): ?string

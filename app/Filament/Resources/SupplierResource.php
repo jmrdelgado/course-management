@@ -19,8 +19,8 @@ class SupplierResource extends Resource
 
     protected static ?string $modelLabel = 'Proveedores';
     protected static ?string $navigationIcon = 'heroicon-s-square-3-stack-3d';
-    protected static ?string $navigationGroup = 'Gestión de Formación';
-    protected static ?int $navigationSort = 8;
+    protected static ?int $navigationSort = 5;
+    protected static ?string $navigationGroup = 'Gestión de Proveedores';
 
     //Obtenemos todas de registros existentes
     public static function getNavigationBadge(): ?string

@@ -18,7 +18,7 @@ class ActionResource extends Resource
     protected static ?string $model = Action::class;
     protected static ?string $modelLabel = 'Acciones';
     protected static ?string $navigationIcon = 'heroicon-s-book-open';
-    protected static ?int $navigationSort = 2;
+    protected static ?int $navigationSort = 6;
     protected static ?string $navigationGroup = 'Gestión de Formación';
 
     //Contador de Acciones existentes
