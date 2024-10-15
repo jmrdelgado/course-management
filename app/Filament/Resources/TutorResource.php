@@ -2,9 +2,9 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\GroupCompanyResource\Pages;
-use App\Filament\Resources\GroupCompanyResource\RelationManagers;
-use App\Models\GroupCompany;
+use App\Filament\Resources\TutorResource\Pages;
+use App\Filament\Resources\TutorResource\RelationManagers;
+use App\Models\Tutor;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -13,14 +13,14 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class GroupCompanyResource extends Resource
+class TutorResource extends Resource
 {
-    protected static ?string $model = GroupCompany::class;
+    protected static ?string $model = Tutor::class;
 
-    protected static ?string $modelLabel = 'Grupo de Empresas';
-    protected static ?string $navigationIcon = 'heroicon-s-building-office-2';
-    protected static ?int $navigationSort = 4;
+    protected static ?string $modelLabel = 'Tutores';
+    protected static ?string $navigationIcon = 'heroicon-c-academic-cap';
     protected static ?string $navigationGroup = 'Gestión de Formación';
+    protected static ?int $navigationSort = 5;
 
     //Obtenemos todas de registros existentes
     public static function getNavigationBadge(): ?string
@@ -33,7 +33,7 @@ class GroupCompanyResource extends Resource
         return $form
             ->schema([
                 Forms\Components\TextInput::make('name')
-                    ->label('Grupo Empresarial')
+                    ->label('Nombre')
                     ->required()
                     ->maxLength(255),
             ]);
@@ -44,7 +44,7 @@ class GroupCompanyResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
-                    ->label('Grupo Empresarial')
+                    ->label('Nombre')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
@@ -79,9 +79,9 @@ class GroupCompanyResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListGroupCompanies::route('/'),
-            'create' => Pages\CreateGroupCompany::route('/create'),
-            'edit' => Pages\EditGroupCompany::route('/{record}/edit'),
+            'index' => Pages\ListTutors::route('/'),
+            'create' => Pages\CreateTutor::route('/create'),
+            'edit' => Pages\EditTutor::route('/{record}/edit'),
         ];
     }
 }
