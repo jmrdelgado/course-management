@@ -12,6 +12,8 @@ class GroupCompany extends Model
 {
     use HasFactory;
 
+    protected $table = 'groupcompanies';
+
     protected $fillable = [
         'name'
     ];

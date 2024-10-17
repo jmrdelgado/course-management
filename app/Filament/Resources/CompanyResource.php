@@ -4,16 +4,19 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\CompanyResource\Pages;
 use App\Filament\Resources\CompanyResource\RelationManagers;
-use App\Models\Company;
-use App\Models\GroupCompany;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Forms\Components\Select;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Filament\Forms\Set;
+
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+
+use App\Models\Company;
+use App\Models\GroupCompany;
 
 use Illuminate\Support\Str;
 
@@ -44,6 +47,7 @@ class CompanyResource extends Resource
                     ->label('Grupo Empresarial')
                     ->relationship('groupcompany', 'name')
                     ->preload()
+                    ->live()
                     ->createOptionForm([
                         Forms\Components\TextInput::make('name')
                             ->label('Nuevo Grupo Empresarial')
@@ -56,7 +60,14 @@ class CompanyResource extends Resource
 
                         return $newgroupcompany->id;
                         
-                    }),
+                    })
+                    ->afterStateUpdated(function($state, Set $set) {
+                        $idrecord = $state;
+                        $set('idcp', $idrecord);
+                      } ),
+                Forms\Components\TextInput::make('idcp')
+                    ->label('ID Empresa')
+                    ->readonly(),
             ]);
     }
 

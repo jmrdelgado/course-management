@@ -53,6 +53,8 @@ class AdminpanelPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
-            ]);
+            ])
+            ->sidebarWidth('18rem')
+            ->sidebarCollapsibleOnDesktop();
     }
 }
