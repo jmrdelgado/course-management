@@ -3,7 +3,10 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Model;
+
+use App\Models\Programming;
 
 class Supplier extends Model
 {
@@ -13,4 +16,14 @@ class Supplier extends Model
     protected $fillable = [
         'name'
     ];
+
+    /**
+     * Get all of the cursos for the Supplier
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function cursos(): HasMany
+    {
+        return $this->hasMany(Programming::class);
+    }
 }
