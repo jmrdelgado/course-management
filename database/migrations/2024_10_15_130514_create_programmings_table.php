@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('programmings', function (Blueprint $table) {
             $table->id();
-            $table->integer('naction');
-            $table->integer('ngroup');
+            $table->string('naction', 6);
+            $table->string('ngroup', 6);
             $table->foreignId('action_id')->constrained()->onUpdate('cascade');
             $table->string('modality')->default('TF');
             $table->foreignId('platform_id')->constrained()->onUpdate('cascade');
@@ -31,7 +31,7 @@ return new class extends Migration
             $table->foreignId('supplier_id')->constrained()->onUpdate('cascade');;
             $table->enum('course_type', ['Bonificado', 'Impartido', 'Privado', 'Gestionado']);
             $table->decimal('cost', 5, 2);
-            $table->enum('billed_month', ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']);
+            $table->enum('billed_month', ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'])->nullable();
             $table->boolean('rlt')->default(false);
             $table->boolean('rlt_send')->default(false);;
             $table->boolean('rlt_received')->default(false);;

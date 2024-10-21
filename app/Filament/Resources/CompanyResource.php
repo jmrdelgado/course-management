@@ -61,13 +61,6 @@ class CompanyResource extends Resource
                         return $newgroupcompany->id;
                         
                     })
-                    ->afterStateUpdated(function($state, Set $set) {
-                        $idrecord = $state;
-                        $set('idcp', $idrecord);
-                      } ),
-                Forms\Components\TextInput::make('idcp')
-                    ->label('ID Empresa')
-                    ->readonly(),
             ]);
     }
 

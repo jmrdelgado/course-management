@@ -105,4 +105,14 @@ class Programming extends Model
     {
         return $this->belongsTo(Agent::class);
     }
+
+    /**
+     * Get the company that owns the Programming
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function company(): BelongsTo
+    {
+        return $this->belongsTo(Company::class);
+    }
 }

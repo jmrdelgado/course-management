@@ -4,15 +4,23 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\ProgrammingResource\Pages;
 use App\Filament\Resources\ProgrammingResource\RelationManagers;
-use App\Models\Programming;
+
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Support\Enums\Alignment;
+use Filament\Tables\Columns\ToggleColumn;
 use Filament\Forms\Components\Section;
+use Filament\Forms\Set;
+use Filament\Forms\Get;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+
+use App\Models\Action;
+use App\Models\Programming;
 
 class ProgrammingResource extends Resource
 {
@@ -27,22 +35,36 @@ class ProgrammingResource extends Resource
     {
         return $form
             ->schema([
-                Section::make('Datos identificativos')
+                Section::make('Acción Formativa')
                 ->schema([
-                    Forms\Components\TextInput::make('naction')
-                        ->label('Nº Acción')
-                        ->required()
-                        ->readonly()
-                        ->numeric(),
-                    Forms\Components\TextInput::make('ngroup')
-                        ->label('Nº Grupo')
-                        ->required()
-                        ->numeric(),
                     Forms\Components\Select::make('action_id')
                         ->label('Denominación')
                         ->relationship('action', 'denomination')
                         ->preload()
+                        ->live()
+                        ->afterStateUpdated(function (Set $set, Get $get) {
+                            $action = Action::findOrfail($get('action_id'));                 
+                            $set('naction', $action->naction);
+                            if ($action->naction == '0000') {
+                                $set('ngroup', '0000');
+                            }
+                            $set('nhours', $action->nhours);
+                        })
                         ->searchable()
+                        ->required()
+                ])
+                ->compact(),
+                Section::make('Datos identificativos')
+                ->schema([
+                    Forms\Components\TextInput::make('naction')
+                        ->label('Nº Acción')
+                        ->numeric()
+                        ->required()
+                        ->readonly(),
+                    Forms\Components\TextInput::make('ngroup')
+                        ->label('Nº Grupo')
+                        ->maxLength(6)
+                        ->numeric()
                         ->required(),
                     Forms\Components\TextInput::make('modality')
                         ->label('Modalidad')
@@ -58,13 +80,20 @@ class ProgrammingResource extends Resource
                     Forms\Components\TextInput::make('nhours')
                         ->label('Nº Horas')
                         ->required()
-                        ->numeric(),
+                        ->numeric()
+                        ->readonly(),
                     Forms\Components\TextInput::make('number_students')
                         ->label('Nº Alumnos')
                         ->required()
                         ->numeric(),
-                    Forms\Components\TextInput::make('course_type')
+                    Forms\Components\Select::make('course_type')
                         ->label('Tipo Curso')
+                        ->options([
+                            'Bonificado' => 'Bonificado',
+                            'Gestionado' => 'Gestionado',
+                            'Impartido' => 'Impartido',
+                            'Privado' => 'Privado'
+                        ])
                         ->required(),
                     Forms\Components\Select::make('supplier_id')
                         ->label('Proveedor')
@@ -106,10 +135,12 @@ class ProgrammingResource extends Resource
 
                 Section::make('Datos de la empresa')
                 ->schema([
-                    Forms\Components\TextInput::make('company_id')
+                    Forms\Components\Select::make('company_id')
                         ->label('Empresa')
-                        ->required()
-                        ->numeric(),
+                        ->relationship('company', 'company')
+                        ->preload()
+                        ->searchable()
+                        ->required(),
                 ])
                 ->compact()
                 ->columns(2),
@@ -121,9 +152,24 @@ class ProgrammingResource extends Resource
                         ->required()
                         ->numeric()
                         ->prefix('€'),
-                    Forms\Components\TextInput::make('billed_month')
+                    Forms\Components\Select::make('billed_month')
                         ->label('Facturado')
-                        ->required(),
+                        ->options(
+                            [
+                                'Enero' => 'Enero',
+                                'Febrero' => 'Febrero',
+                                'Marzo' => 'Marzo',
+                                'Abril' => 'Abril',
+                                'Mayo' => 'Mayo',
+                                'Junio' => 'Junio',
+                                'Julio' => 'Julio',
+                                'Agosto' => 'Agosto',
+                                'Septiembre' => 'Septiembre',
+                                'Octubre' => 'Octubre',
+                                'Noviembre' => 'Noviembre',
+                                'Diciembre' => 'Diciembre'    
+                            ]
+                        ),
                 ])
                 ->compact()
                 ->columns(2),
@@ -170,67 +216,131 @@ class ProgrammingResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('naction')
-                    ->numeric()
+                    ->label('Acción')
+                    ->size(TextColumn\TextColumnSize::ExtraSmall)
+                    ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('ngroup')
-                    ->numeric()
+                    ->label('Grupo')
+                    ->size(TextColumn\TextColumnSize::ExtraSmall)
+                    ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('action_id')
-                    ->numeric()
+                Tables\Columns\TextColumn::make('action.denomination')
+                    ->label('Denominación')
+                    ->size(TextColumn\TextColumnSize::ExtraSmall)
+                    ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('modality')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('platform_id')
-                    ->numeric()
-                    ->sortable(),
+                    ->label('Modalidad')
+                    ->size(TextColumn\TextColumnSize::ExtraSmall)
+                    ->alignment(Alignment::Center)
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('platform.name')
+                    ->label('Plataforma')
+                    ->size(TextColumn\TextColumnSize::ExtraSmall)
+                    ->alignment(Alignment::Center)
+                    ->searchable()
+                    ->sortable()
+                    ->badge()
+                    ->color(fn (string $state): string => match($state) {
+                        'CAE' => 'celeste',
+                        'CAE IDIOMAS' => 'azul',
+                        'VÉRTICE' => 'rojo_claro',
+                    }),
                 Tables\Columns\TextColumn::make('nhours')
+                    ->label('Horas')
+                    ->size(TextColumn\TextColumnSize::ExtraSmall)
+                    ->alignment(Alignment::Center)
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('communication_date')
+                    ->label('Comunicación')
+                    ->size(TextColumn\TextColumnSize::ExtraSmall)
                     ->date()
+                    ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('start_date')
+                    ->label('F.Inicio')
+                    ->size(TextColumn\TextColumnSize::ExtraSmall)
                     ->date()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('end_date')
+                    ->label('F.Fin')
+                    ->size(TextColumn\TextColumnSize::ExtraSmall)
                     ->date()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('number_students')
+                    ->label('Alumnos')
+                    ->size(TextColumn\TextColumnSize::ExtraSmall)
+                    ->alignment(Alignment::Center)
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('company_id')
+                Tables\Columns\TextColumn::make('company.company')
+                    ->label('Empresa')
+                    ->size(TextColumn\TextColumnSize::ExtraSmall)
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('tutor_id')
+                Tables\Columns\TextColumn::make('tutor.name')
+                    ->label('Tutor')
+                    ->size(TextColumn\TextColumnSize::ExtraSmall)
                     ->numeric()
+                    ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('coordinator_id')
+                Tables\Columns\TextColumn::make('coordinator.name')
+                    ->label('Coordinador')
+                    ->size(TextColumn\TextColumnSize::ExtraSmall)
+                    ->alignment(Alignment::Center)
                     ->numeric()
+                    ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('agent_id')
+                Tables\Columns\TextColumn::make('agent.name')
+                    ->label('Comercial')
+                    ->size(TextColumn\TextColumnSize::ExtraSmall)
+                    ->alignment(Alignment::Center)
                     ->numeric()
+                    ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('supplier_id')
+                Tables\Columns\TextColumn::make('supplier.name')
+                    ->label('Proveedor')
+                    ->size(TextColumn\TextColumnSize::ExtraSmall)
+                    ->alignment(Alignment::Center)
                     ->numeric()
+                    ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('course_type'),
+                Tables\Columns\TextColumn::make('course_type')
+                    ->label('Tipo')
+                    ->size(TextColumn\TextColumnSize::ExtraSmall),
                 Tables\Columns\TextColumn::make('cost')
-                    ->money()
+                    ->label('Coste')
+                    ->size(TextColumn\TextColumnSize::ExtraSmall)
+                    ->money('EUR')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('billed_month'),
-                Tables\Columns\IconColumn::make('rlt')
-                    ->boolean(),
-                Tables\Columns\IconColumn::make('rlt_send')
-                    ->boolean(),
-                Tables\Columns\IconColumn::make('rlt_received')
-                    ->boolean(),
-                Tables\Columns\IconColumn::make('rlt_faborable')
-                    ->boolean(),
-                Tables\Columns\IconColumn::make('rlt_incident')
-                    ->boolean(),
+                Tables\Columns\TextColumn::make('billed_month')
+                    ->label('Facturado')
+                    ->size(TextColumn\TextColumnSize::ExtraSmall)
+                    ->searchable(),
+                Tables\Columns\ToggleColumn::make('rlt')
+                    ->label('RLT'),
+                Tables\Columns\ToggleColumn::make('rlt_send')
+                    ->label('RLT Enviada')
+                    ->alignment(Alignment::Center),
+                Tables\Columns\ToggleColumn::make('rlt_received')
+                    ->label('RLT Recibida')
+                    ->alignment(Alignment::Center),
+                Tables\Columns\ToggleColumn::make('rlt_faborable')
+                    ->label('RLT Faborable')
+                    ->alignment(Alignment::Center),
+                Tables\Columns\ToggleColumn::make('rlt_incident')
+                    ->label('RLT Desfaborable')
+                    ->alignment(Alignment::Center),
                 Tables\Columns\IconColumn::make('canceled')
+                    ->label('Cancelado')
+                    ->alignment(Alignment::Center)
                     ->boolean(),
                 Tables\Columns\IconColumn::make('incident')
+                    ->label('Incidentado')
+                    ->alignment(Alignment::Center)
                     ->boolean(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()

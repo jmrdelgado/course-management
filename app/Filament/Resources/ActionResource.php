@@ -34,7 +34,7 @@ class ActionResource extends Resource
                 Forms\Components\TextInput::make('naction')
                     ->label('Nº Acción')
                     ->required()
-                    ->integer()
+                    ->mask('999999')
                     ->maxLength(6),
                 Forms\Components\TextInput::make('denomination')
                     ->label('Denominación')
@@ -42,8 +42,8 @@ class ActionResource extends Resource
                 Forms\Components\TextInput::make('nhours')
                     ->label('Nº Horas')
                     ->required()
-                    ->integer()
-                    ->maxLength(3),
+                    ->mask('999999')
+                    ->maxLength(6),
             ])
             ->columns(3);
     }
