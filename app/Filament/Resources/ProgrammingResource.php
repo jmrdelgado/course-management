@@ -200,9 +200,6 @@ class ProgrammingResource extends Resource
                     Forms\Components\Textarea::make('observations')
                         ->label('Observaciones')
                         ->columnSpanFull(),
-                    Forms\Components\Toggle::make('canceled')
-                        ->label('Anulado')
-                        ->required(),
                     Forms\Components\Toggle::make('incident')
                         ->label('Incidentado')
                         ->required(),
@@ -334,10 +331,6 @@ class ProgrammingResource extends Resource
                 Tables\Columns\ToggleColumn::make('rlt_incident')
                     ->label('RLT Desfaborable')
                     ->alignment(Alignment::Center),
-                Tables\Columns\IconColumn::make('canceled')
-                    ->label('Cancelado')
-                    ->alignment(Alignment::Center)
-                    ->boolean(),
                 Tables\Columns\IconColumn::make('incident')
                     ->label('Incidentado')
                     ->alignment(Alignment::Center)
@@ -361,7 +354,11 @@ class ProgrammingResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->recordClasses(
+                /* fn (Programming $record) => $record->canceled == 1 ? 'my-line-bg-canceled' : null */
+                fn (Programming $record) => $record->incident == 1 ? 'my-line-bg-incident' : null
+            );
     }
 
     public static function getRelations(): array

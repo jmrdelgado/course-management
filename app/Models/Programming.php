@@ -42,7 +42,6 @@ class Programming extends Model
         'rlt_received',
         'rlt_favorable',
         'rlt_incident',
-        'canceled',
         'incident'      
     ];
 
