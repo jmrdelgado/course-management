@@ -371,7 +371,8 @@ class ProgrammingResource extends Resource
                     ->label('Denominación')
                     ->size(TextColumn\TextColumnSize::ExtraSmall)
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->wrap(),
                 Tables\Columns\TextColumn::make('modality')
                     ->label('Modalidad')
                     ->size(TextColumn\TextColumnSize::ExtraSmall)
@@ -379,7 +380,6 @@ class ProgrammingResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\ColorColumn::make('platform.color')
                     ->label('Plataforma')
-                    ->wrap()
                     ->alignment(Alignment::Center),
                 Tables\Columns\TextColumn::make('nhours')
                     ->label('Horas')
@@ -415,7 +415,8 @@ class ProgrammingResource extends Resource
                     ->label('Empresa')
                     ->size(TextColumn\TextColumnSize::ExtraSmall)
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->wrap(),
                 Tables\Columns\TextColumn::make('groupcompany.name')
                     ->label('Grupo Empresas')
                     ->size(TextColumn\TextColumnSize::ExtraSmall)
@@ -423,7 +424,8 @@ class ProgrammingResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('observations')
                     ->label('Observaciones')
-                    ->size(TextColumn\TextColumnSize::ExtraSmall),
+                    ->size(TextColumn\TextColumnSize::ExtraSmall)
+                    ->wrap(),
                 Tables\Columns\TextColumn::make('tutor.name')
                     ->label('Tutor')
                     ->size(TextColumn\TextColumnSize::ExtraSmall)
@@ -507,7 +509,7 @@ class ProgrammingResource extends Resource
                             )
                             ->when(
                                 $data['end_date'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('start_date', '<=', $date),
+                                fn (Builder $query, $date): Builder => $query->whereDate('end_date', '<=', $date),
                             );
                     }),
                 SelectFilter::make('tutors')
