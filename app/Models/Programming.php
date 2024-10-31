@@ -12,6 +12,7 @@ use App\Models\Supplier;
 use App\Models\Tutor;
 use App\Models\Coordinator;
 use App\Models\Agent;
+use App\Models\GroupCompany;
 
 class Programming extends Model
 {
@@ -35,14 +36,17 @@ class Programming extends Model
         'agent_id',
         'supplier_id',
         'course_type',
+        'student_cost',
         'cost',
+        'project_cost',
         'billed_month',
         'rlt',
         'rlt_send',
         'rlt_received',
         'rlt_favorable',
         'rlt_incident',
-        'incident'      
+        'incident',
+        'canceled' 
     ];
 
     /**
@@ -113,5 +117,15 @@ class Programming extends Model
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
+    }
+
+    /**
+     * Get the groupcompany that owns the Programming
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function groupcompany(): BelongsTo
+    {
+        return $this->belongsTo(GroupCompany::class);
     }
 }

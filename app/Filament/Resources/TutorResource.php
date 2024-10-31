@@ -44,7 +44,7 @@ class TutorResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
-                    ->label('Nombre')
+                    ->label('Nombre Tutor')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()

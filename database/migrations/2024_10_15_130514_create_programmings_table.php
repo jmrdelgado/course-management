@@ -24,13 +24,16 @@ return new class extends Migration
             $table->date('end_date');
             $table->integer('number_students');
             $table->foreignId('company_id')->constrained()->onUpdate('cascade');
+            $table->foreignId('groupcompany_id')->nullable()->constrained()->onUpdate('cascade');
             $table->longText('observations')->nullable();
             $table->foreignId('tutor_id')->constrained()->onUpdate('cascade');
             $table->foreignId('coordinator_id')->constrained()->onUpdate('cascade');
             $table->foreignId('agent_id')->constrained()->onUpdate('cascade');
             $table->foreignId('supplier_id')->constrained()->onUpdate('cascade');
             $table->enum('course_type', ['Bonificado', 'Impartido', 'Privado', 'Gestionado']);
+            $table->decimal('student_cost', 5, 2);
             $table->decimal('cost', 5, 2);
+            $table->decimal('project_cost', 5, 2)->nullable();
             $table->enum('billed_month', ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'])->nullable();
             $table->boolean('rlt')->default(false);
             $table->boolean('rlt_send')->default(false);
@@ -38,6 +41,7 @@ return new class extends Migration
             $table->boolean('rlt_faborable')->default(false);
             $table->boolean('rlt_incident')->default(false);
             $table->boolean('incident')->default(false);
+            $table->boolean('canceled')->default(false);
             $table->timestamps();
         });
     }

@@ -11,6 +11,7 @@ use Filament\Forms\Components\ColorPicker;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Filament\Tables\Columns\ColorColumn;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
@@ -36,6 +37,8 @@ class PlatformResource extends Resource
                     ->label('Nombre')
                     ->required()
                     ->maxLength(255),
+                Forms\Components\ColorPicker::make('color')
+                    ->label('Color identificativo'),
                 Forms\Components\Textarea::make('description')
                     ->label('Descripción')
                     ->columnSpanFull(),
@@ -48,6 +51,7 @@ class PlatformResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
+                Tables\Columns\ColorColumn::make('color'),
                 Tables\Columns\TextColumn::make('description')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
