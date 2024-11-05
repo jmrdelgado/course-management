@@ -23,6 +23,7 @@ use Filament\Forms\Get;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Str;
+use Carbon\Carbon;
 
 use App\Models\Action;
 use App\Models\Programming;
@@ -36,8 +37,8 @@ class ProgrammingResource extends Resource
 
     protected static ?string $modelLabel = 'Cursos';
     protected static ?string $navigationIcon = 'heroicon-s-rectangle-group';
-    protected static ?string $navigationGroup = 'Programación de Cursos';
-    protected static ?int $navigationSort = 10;
+    protected static ?string $navigationGroup = 'Programación';
+    protected static ?int $navigationSort = 11;
 
     public static function form(Form $form): Form
     {
@@ -175,8 +176,13 @@ class ProgrammingResource extends Resource
                 ->schema([
                     Forms\Components\DatePicker::make('communication_date')
                         ->label('F. Comunicación'),
-                    Forms\Components\DatePicker::make('start_date')
+                    Forms\Components\Select::make('departure_id')
                         ->label('F. Inicio')
+                        ->relationship('departure', 'departure_date', function ($query) {
+                            $datos = $query->selectRaw("id, DATE_FORMAT(departure_date, '%d-%m-%Y') as departure_date");
+                            return $datos;
+                            })
+                        ->preload()
                         ->required(),
                     Forms\Components\DatePicker::make('end_date')
                         ->label('F.Fin')

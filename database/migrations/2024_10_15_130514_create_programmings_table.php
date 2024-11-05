@@ -20,7 +20,7 @@ return new class extends Migration
             $table->foreignId('platform_id')->constrained()->onUpdate('cascade');
             $table->integer('nhours');
             $table->date('communication_date')->nullable();
-            $table->date('start_date');
+            $table->foreignId('departure_id')->constrained()->onUpdate('cascade');
             $table->date('end_date');
             $table->integer('number_students');
             $table->foreignId('company_id')->constrained()->onUpdate('cascade');

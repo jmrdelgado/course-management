@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\Action;
 use App\Models\Platform;
 use App\Models\Supplier;
+use App\Models\Departure;
 use App\Models\Tutor;
 use App\Models\Coordinator;
 use App\Models\Agent;
@@ -26,7 +27,7 @@ class Programming extends Model
         'platform_id',
         'nhours',
         'communication_date',
-        'start_date',
+        'departure_id',
         'end_date',
         'number_students',
         'company_id',
@@ -77,6 +78,16 @@ class Programming extends Model
     public function supplier(): BelongsTo
     {
         return $this->belongsTo(Supplier::class);
+    }
+
+    /**
+     * Get the departure that owns the Programming
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function departure(): BelongsTo
+    {
+        return $this->belongsTo(Departure::class);
     }
 
     /**
