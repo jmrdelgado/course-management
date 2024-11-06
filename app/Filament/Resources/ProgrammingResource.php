@@ -30,6 +30,7 @@ use App\Models\Programming;
 use App\Models\Company;
 use App\Models\GroupCompany;
 use App\Models\Tutor;
+use App\Models\Supplier;
 
 class ProgrammingResource extends Resource
 {
@@ -136,7 +137,20 @@ class ProgrammingResource extends Resource
                         ->relationship('supplier', 'name')
                         ->preload()
                         ->required()
-                        ->optionsLimit(5),
+                        ->optionsLimit(5)
+                        ->live()
+                        ->createOptionForm([
+                            Forms\Components\TextInput::make('name')
+                            ->label('Proveedor')
+                            ->required()
+                        ])
+                        ->createOptionUsing(function (array $data): int {
+                            $newsupplier = Supplier::create([
+                                'name' => $data['name'] = Str::upper($data['name']),
+                            ]);
+    
+                            return $newsupplier->id;
+                        }),
                     Forms\Components\Select::make('tutor_id')
                         ->label('Tutor')
                         ->relationship('tutor', 'name')
@@ -161,7 +175,20 @@ class ProgrammingResource extends Resource
                         ->relationship('coordinator', 'name')
                         ->preload()
                         ->required()
-                        ->optionsLimit(5),
+                        ->optionsLimit(5)
+                        ->live()
+                        ->createOptionForm([
+                            Forms\Components\TextInput::make('name')
+                            ->label('Nombre Coordinador')
+                            ->required()
+                        ])
+                        ->createOptionUsing(function (array $data): int {
+                            $newcoordinator = Coordinator::create([
+                                'name' => $data['name'] = Str::upper($data['name']),
+                            ]);
+
+                            return $newcoordinator->id;
+                        }),
                     Forms\Components\Select::make('agent_id')
                         ->label('Agente')
                         ->relationship('agent', 'name')
@@ -396,19 +423,19 @@ class ProgrammingResource extends Resource
                 Tables\Columns\TextColumn::make('communication_date')
                     ->label('Comunicación')
                     ->size(TextColumn\TextColumnSize::ExtraSmall)
-                    ->date()
+                    ->date('d-m-Y')
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('start_date')
                     ->label('F.Inicio')
                     ->size(TextColumn\TextColumnSize::ExtraSmall)
-                    ->date()
+                    ->date('d-m-Y')
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('end_date')
                     ->label('F.Fin')
                     ->size(TextColumn\TextColumnSize::ExtraSmall)
-                    ->date()
+                    ->date('d-m-Y')
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('number_students')

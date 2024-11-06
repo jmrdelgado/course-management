@@ -28,6 +28,7 @@ class Programming extends Model
         'nhours',
         'communication_date',
         'departure_id',
+        'start_date',
         'end_date',
         'number_students',
         'company_id',
