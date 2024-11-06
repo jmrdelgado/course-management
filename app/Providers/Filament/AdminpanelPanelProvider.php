@@ -36,6 +36,9 @@ class AdminpanelPanelProvider extends PanelProvider
                 'azul' => '#1d22d6',
                 'rojo_claro' => '#f289a4'
             ])
+            ->brandLogo(asset('images/logo_corporativo.png'))
+            ->brandLogoHeight('4rem')
+            ->favicon(asset('images/favicon.ico'))
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([
