@@ -32,9 +32,9 @@ return new class extends Migration
             $table->foreignId('agent_id')->constrained()->onUpdate('cascade');
             $table->foreignId('supplier_id')->constrained()->onUpdate('cascade');
             $table->enum('course_type', ['Bonificado', 'Impartido', 'Privado', 'Gestionado']);
-            $table->decimal('student_cost', 5, 2);
-            $table->decimal('cost', 5, 2);
-            $table->decimal('project_cost', 5, 2)->nullable();
+            $table->decimal('student_cost', 6, 2);
+            $table->decimal('cost', 6, 2);
+            $table->decimal('project_cost', 6, 2)->nullable();
             $table->enum('billed_month', ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'])->nullable();
             $table->boolean('rlt')->default(false);
             $table->boolean('rlt_send')->default(false);

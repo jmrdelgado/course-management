@@ -31,6 +31,7 @@ use App\Models\Company;
 use App\Models\GroupCompany;
 use App\Models\Tutor;
 use App\Models\Supplier;
+use App\Models\Departure;
 
 class ProgrammingResource extends Resource
 {
@@ -202,21 +203,30 @@ class ProgrammingResource extends Resource
                 Section::make('Datos de comunicación')
                 ->schema([
                     Forms\Components\DatePicker::make('communication_date')
-                        ->label('F. Comunicación'),
+                        ->label('F.Comunicación'),
                     Forms\Components\Select::make('departure_id')
-                        ->label('F. Inicio')
+                        ->label('F.Salida')
                         ->relationship('departure', 'departure_date', function ($query) {
                             $datos = $query->selectRaw("id, DATE_FORMAT(departure_date, '%d-%m-%Y') as departure_date");
                             return $datos;
                             })
                         ->preload()
-                        ->required(),
+                        ->live()
+                        ->required()
+                        ->afterStateUpdated(function (Set $set, Get $get) {
+                            $newdate = Departure::findOrfail($get('departure_id'));
+                            $set('start_date', $newdate->departure_date);
+                        }),
+                    Forms\Components\TextInput::make('start_date')
+                        ->label('F.Inicio')
+                        ->disabled()
+                        ->dehydrated(true),
                     Forms\Components\DatePicker::make('end_date')
                         ->label('F.Fin')
                         ->required(),
                 ])
                 ->compact()
-                ->columns(3),
+                ->columns(4),
 
                 Section::make('Datos de la empresa')
                 ->schema([
