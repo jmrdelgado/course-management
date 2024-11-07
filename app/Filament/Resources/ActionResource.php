@@ -54,9 +54,11 @@ class ActionResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('naction')
                     ->label('Nº Acción')
+                    ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('denomination')
                     ->label('Denominación')
+                    ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('nhours')
                     ->label('Nº Horas'),

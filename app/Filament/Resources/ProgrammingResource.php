@@ -213,6 +213,11 @@ class ProgrammingResource extends Resource
                         ->preload()
                         ->live()
                         ->required()
+                        ->createOptionForm([
+                            DatePicker::make('departure_date')
+                            ->label('Fecha Salida')
+                            ->required()
+                        ])
                         ->afterStateUpdated(function (Set $set, Get $get) {
                             $newdate = Departure::findOrfail($get('departure_id'));
                             $set('start_date', $newdate->departure_date);
