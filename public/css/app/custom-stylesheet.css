@@ -1,0 +1,12 @@
+.my-line-bg-incident {
+    background-color: goldenrod !important;
+}
+
+.my-line-bg-canceled {
+    background-color: coral !important;
+}
+
+.before\:w-0\.5:before {
+    content: var(--tw-content);
+    width: 0.5rem !important;
+}

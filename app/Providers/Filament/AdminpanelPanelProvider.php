@@ -68,6 +68,7 @@ class AdminpanelPanelProvider extends PanelProvider
             ])
             ->sidebarWidth('18rem')
             ->sidebarCollapsibleOnDesktop()
-            ->maxContentWidth(MaxWidth::Full);
+            ->maxContentWidth(MaxWidth::Full)
+            ->databaseNotifications();
     }
 }
