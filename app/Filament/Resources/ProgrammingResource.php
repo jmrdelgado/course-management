@@ -25,6 +25,10 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
 
+use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
+use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
+use pxlrbt\FilamentExcel\Exports\ExcelExport;
+
 use App\Models\Action;
 use App\Models\Programming;
 use App\Models\Company;
@@ -596,6 +600,12 @@ class ProgrammingResource extends Resource
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
+                    ExportBulkAction::make()->exports([
+                        ExcelExport::make('table')
+                            ->fromTable()
+                            ->askForFilename()
+                            ->askForWriterType()
+                    ])
                 ]),
             ])
             ->recordClasses(
