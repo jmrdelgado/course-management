@@ -40,6 +40,10 @@ class EditProgramming extends EditRecord
                     ->label('Marcar como leída')
                     ->button()
                     ->markAsRead(),
+                Action::make('markAsUnread')
+                    ->label('No leída')
+                    ->button()
+                    ->markAsUnread(),
             ])
             ->send($recipient)
             ->sendToDatabase($recipient);
@@ -55,6 +59,10 @@ class EditProgramming extends EditRecord
                     ->label('Marcar como leída')
                     ->button()
                     ->markAsRead(),
+                Action::make('markAsUnread')
+                    ->label('No leída')
+                    ->button()
+                    ->markAsUnread(),
             ])
             ->send($recipient)
             ->sendToDatabase($recipient);

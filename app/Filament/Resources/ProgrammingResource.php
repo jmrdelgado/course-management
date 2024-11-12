@@ -604,7 +604,7 @@ class ProgrammingResource extends Resource
                         ExcelExport::make('table')
                             ->fromTable()
                             ->askForFilename()
-                            ->askForWriterType()
+                            ->withWriterType(\Maatwebsite\Excel\Excel::XLSX)
                     ])
                 ]),
             ])

@@ -35,6 +35,10 @@ class CreateProgramming extends CreateRecord
                     ->label('Marcar como leída')
                     ->button()
                     ->markAsRead(),
+                Action::make('markAsUnread')
+                    ->label('No leída')
+                    ->button()
+                    ->markAsUnread(),
             ])
             ->send($recipient)
             ->sendToDatabase($recipient);
