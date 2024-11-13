@@ -10,6 +10,8 @@ use App\Models\Programming;
 
 class DepartureDatesOverview extends BaseWidget
 {
+    protected static ?int $sort = 2;
+    
     protected function getStats(): array
     {
         $fechaActual = Carbon::now();

@@ -32,7 +32,10 @@ class AdminpanelPanelProvider extends PanelProvider
             ->path('adminpanel')
             ->login()
             ->plugins([
-                \BezhanSalleh\FilamentShield\FilamentShieldPlugin::make()
+                \BezhanSalleh\FilamentShield\FilamentShieldPlugin::make(),
+                FilamentFullCalendarPlugin::make()
+                    ->selectable()
+                    ->editable()
             ])
             ->colors([
                 'primary' => Color::Amber,
@@ -70,11 +73,6 @@ class AdminpanelPanelProvider extends PanelProvider
             ->sidebarWidth('18rem')
             ->sidebarCollapsibleOnDesktop()
             ->maxContentWidth(MaxWidth::Full)
-            ->databaseNotifications()
-            ->plugin(
-                FilamentFullCalendarPlugin::make()
-                    ->selectable()
-                    ->editable()
-            );
+            ->databaseNotifications();
     }
 }
