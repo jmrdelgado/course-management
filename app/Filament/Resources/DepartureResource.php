@@ -26,8 +26,17 @@ class DepartureResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\DatePicker::make('departure_date')
-                    ->label('Fecha de Salida')
+                Forms\Components\TextInput::make('title')
+                    ->label('Tipo Evento')
+                    ->required()
+                    ->maxLength(255),
+                Forms\Components\ColorPicker::make('color')
+                    ->label('Color identificativo'),
+                Forms\Components\DatePicker::make('start_at')
+                    ->label('Fecha Inicio')
+                    ->required(),
+                Forms\Components\DatePicker::make('end_at')
+                    ->label('Fecha Fin')
                     ->required(),
             ]);
     }
@@ -35,10 +44,19 @@ class DepartureResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->columns([
-                Tables\Columns\TextColumn::make('departure_date')
+            /* ->columns([
+                Tables\Columns\TextColumn::make('title')
+                    ->label('Tipo Evento')
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('start_at')
                     ->date('d-m-Y')
-                    ->label('Fecha Salida')
+                    ->label('Fecha Inicio')
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('end_at')
+                    ->date('d-m-Y')
+                    ->label('Fecha Fin')
                     ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
@@ -61,7 +79,8 @@ class DepartureResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
-            ]);
+            ]); */
+            ->paginated(false);
     }
 
     public static function getRelations(): array

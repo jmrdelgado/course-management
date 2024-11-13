@@ -216,21 +216,21 @@ class ProgrammingResource extends Resource
                         ->label('F.Comunicación'),
                     Forms\Components\Select::make('departure_id')
                         ->label('F.Salida')
-                        ->relationship('departure', 'departure_date', function ($query) {
-                            $datos = $query->selectRaw("id, DATE_FORMAT(departure_date, '%d-%m-%Y') as departure_date");
+                        ->relationship('departure', 'start_at', function ($query) {
+                            $datos = $query->selectRaw("id, DATE_FORMAT(start_at, '%d-%m-%Y') as start_at");
                             return $datos;
                             })
                         ->preload()
                         ->live()
                         ->required()
                         ->createOptionForm([
-                            DatePicker::make('departure_date')
+                            DatePicker::make('start_at')
                             ->label('Fecha Salida')
                             ->required()
                         ])
                         ->afterStateUpdated(function (Set $set, Get $get) {
                             $newdate = Departure::findOrfail($get('departure_id'));
-                            $set('start_date', $newdate->departure_date);
+                            $set('start_date', $newdate->start_at);
                         }),
                     Forms\Components\TextInput::make('start_date')
                         ->label('F.Inicio')
@@ -618,7 +618,8 @@ class ProgrammingResource extends Resource
                         return null;
                     }
                 }
-            );
+            )
+            ->defaultSort('start_date', 'asc');
     }
 
     public static function getRelations(): array
