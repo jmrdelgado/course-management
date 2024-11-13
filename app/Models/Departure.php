@@ -13,7 +13,10 @@ class Departure extends Model
 
     /** @var array string */
     protected $fillable = [
-        'departure_date'
+        'title',
+        'color',
+        'start_at',
+        'end_at'
     ];
 
     /**

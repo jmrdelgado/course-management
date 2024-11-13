@@ -19,4 +19,11 @@ class ListDepartures extends ListRecords
                 ->label('Crear Nueva Salida'),
         ];
     }
+
+    protected function getHeaderWidgets(): array
+    {
+        return [
+            DepartureResource\Widgets\CalendarWidget::class,
+        ];
+    }
 }
