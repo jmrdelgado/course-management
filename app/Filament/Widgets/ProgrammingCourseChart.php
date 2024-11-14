@@ -10,6 +10,7 @@ use App\Models\Programming;
 class ProgrammingCourseChart extends ChartWidget
 {
     protected static ?string $heading = 'Cursos Programados Por Meses';
+    protected static bool $isLazy = true;
     protected static ?int $sort = 4;
  
     protected function getData(): array

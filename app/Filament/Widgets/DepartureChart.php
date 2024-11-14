@@ -10,6 +10,8 @@ use App\Models\Departure;
 class DepartureChart extends ChartWidget
 {
     protected static ?string $heading = 'Salidas Programadas por Meses';
+    protected static bool $isLazy = true;
+    protected static string $color = 'info';
     protected static ?int $sort = 3;
 
     protected function getData(): array
