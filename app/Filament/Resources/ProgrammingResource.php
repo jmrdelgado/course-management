@@ -2,40 +2,43 @@
 
 namespace App\Filament\Resources;
 
+use Filament\Forms;
+use Filament\Tables;
+use Filament\Forms\Get;
+use Filament\Forms\Set;
+use Filament\Forms\Form;
+use Filament\Tables\Table;
+use Illuminate\Support\Str;
+use Filament\Resources\Resource;
+use Filament\Tables\Filters\Filter;
+use Filament\Support\Enums\Alignment;
+use Filament\Forms\Components\Section;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ColorColumn;
+use Filament\Forms\Components\DatePicker;
+use Filament\Tables\Columns\ToggleColumn;
+use Filament\Tables\Filters\SelectFilter;
+
+use Carbon\Carbon;
+
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
+
 use App\Filament\Resources\ProgrammingResource\Pages;
 use App\Filament\Resources\ProgrammingResource\RelationManagers;
 
-use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
-use Filament\Tables;
-use Filament\Tables\Table;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Columns\ColorColumn;
-use Filament\Support\Enums\Alignment;
-use Filament\Tables\Columns\ToggleColumn;
-use Filament\Forms\Components\Section;
-use Filament\Tables\Filters\Filter;
-use Filament\Forms\Components\DatePicker;
-use Filament\Tables\Filters\SelectFilter;
-use Filament\Forms\Set;
-use Filament\Forms\Get;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Illuminate\Support\Str;
-use Carbon\Carbon;
-
-use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
-use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
 use pxlrbt\FilamentExcel\Exports\ExcelExport;
+use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
+use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
 
-use App\Models\Action;
-use App\Models\Programming;
-use App\Models\Company;
-use App\Models\GroupCompany;
 use App\Models\Tutor;
+use App\Models\Action;
+use App\Models\Company;
 use App\Models\Supplier;
 use App\Models\Departure;
+use App\Models\Coordinator;
+use App\Models\Programming;
+use App\Models\GroupCompany;
 
 class ProgrammingResource extends Resource
 {
@@ -224,10 +227,29 @@ class ProgrammingResource extends Resource
                         ->live()
                         ->required()
                         ->createOptionForm([
-                            DatePicker::make('start_at')
-                            ->label('Fecha Salida')
-                            ->required()
+                            Forms\Components\TextInput::make('title')
+                                ->label('Tipo Evento')
+                                ->required()
+                                ->maxLength(255),
+                            Forms\Components\ColorPicker::make('color')
+                                ->label('Color identificativo'),
+                            Forms\Components\DatePicker::make('start_at')
+                                ->label('Fecha Salida')
+                                ->required(),
+                            Forms\Components\DatePicker::make('end_at')
+                                ->label('Fecha Fin')
+                                ->required(),
                         ])
+                        ->createOptionUsing(function (array $data): int {
+                            $newdeparture = Departure::create([
+                                'title' => $data['title'] = Str::upper($data['title']),
+                                'color' => $data['color'],
+                                'start_at' => $data['start_at'],
+                                'end_at' => $data['end_at']
+                            ]);
+
+                            return $newdeparture->id;
+                        })
                         ->afterStateUpdated(function (Set $set, Get $get) {
                             $newdate = Departure::findOrfail($get('departure_id'));
                             $set('start_date', $newdate->start_at);

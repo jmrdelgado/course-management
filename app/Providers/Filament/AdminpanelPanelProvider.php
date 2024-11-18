@@ -34,7 +34,6 @@ class AdminpanelPanelProvider extends PanelProvider
             ->plugins([
                 \BezhanSalleh\FilamentShield\FilamentShieldPlugin::make(),
                 FilamentFullCalendarPlugin::make()
-                    ->selectable()
                     ->editable()
             ])
             ->colors([
