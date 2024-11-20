@@ -31,6 +31,7 @@ class AdminpanelPanelProvider extends PanelProvider
             ->id('adminpanel')
             ->path('adminpanel')
             ->login()
+            ->passwordReset()
             ->plugins([
                 \BezhanSalleh\FilamentShield\FilamentShieldPlugin::make(),
                 FilamentFullCalendarPlugin::make()
