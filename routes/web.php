@@ -23,7 +23,7 @@ Route::get('/deploy', function () {
     Artisan::call('key:generate');
     Artisan::call('cache:clear');
     Artisan::call('optimize');
-    Artisan::call('migrate:fresh');
+    Artisan::call('migrate:refresh');
     Artisan::call('shield:generate --all');
     Artisan::call('db:seed');
 });
