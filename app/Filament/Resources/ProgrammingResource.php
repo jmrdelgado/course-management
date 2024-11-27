@@ -545,7 +545,7 @@ class ProgrammingResource extends Resource
                     ->searchable()
                     ->sortable()
                     ->wrap(),
-                Tables\Columns\TextColumn::make('groupcompany.name')
+                Tables\Columns\TextColumn::make('groupcompany')
                     ->label('Grupo Empresas')
                     ->size(TextColumn\TextColumnSize::ExtraSmall)
                     ->searchable()
@@ -565,13 +565,13 @@ class ProgrammingResource extends Resource
                     ->alignment(Alignment::Center)
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('name')
+                Tables\Columns\TextColumn::make('agent')
                     ->label('Comercial')
                     ->size(TextColumn\TextColumnSize::ExtraSmall)
                     ->alignment(Alignment::Center)
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('name')
+                Tables\Columns\TextColumn::make('supplier')
                     ->label('Proveedor')
                     ->size(TextColumn\TextColumnSize::ExtraSmall)
                     ->alignment(Alignment::Center)
