@@ -2,11 +2,11 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Models\Action;
 use Illuminate\Database\Eloquent\Model;
 
-use App\Models\Programming;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Supplier extends Model
 {
@@ -18,12 +18,12 @@ class Supplier extends Model
     ];
 
     /**
-     * Get all of the cursos for the Supplier
+     * Get all of the actions for the Supplier
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function cursos(): HasMany
+    public function actions(): HasMany
     {
-        return $this->hasMany(Programming::class);
+        return $this->hasMany(Action::class);
     }
 }

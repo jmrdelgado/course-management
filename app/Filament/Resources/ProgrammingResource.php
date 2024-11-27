@@ -2,43 +2,44 @@
 
 namespace App\Filament\Resources;
 
+use Carbon\Carbon;
 use Filament\Forms;
 use Filament\Tables;
-use Filament\Forms\Get;
-use Filament\Forms\Set;
-use Filament\Forms\Form;
-use Filament\Tables\Table;
-use Illuminate\Support\Str;
-use Filament\Resources\Resource;
-use Filament\Tables\Filters\Filter;
-use Filament\Support\Enums\Alignment;
-use Filament\Forms\Components\Section;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Columns\ColorColumn;
-use Filament\Forms\Components\DatePicker;
-use Filament\Tables\Columns\ToggleColumn;
-use Filament\Tables\Filters\SelectFilter;
-
-use Carbon\Carbon;
-
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-
-use App\Filament\Resources\ProgrammingResource\Pages;
-use App\Filament\Resources\ProgrammingResource\RelationManagers;
-
-use pxlrbt\FilamentExcel\Exports\ExcelExport;
-use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
-use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
-
+use App\Models\Agent;
 use App\Models\Tutor;
 use App\Models\Action;
 use App\Models\Company;
+use Filament\Forms\Get;
+use Filament\Forms\Set;
 use App\Models\Supplier;
+use Filament\Forms\Form;
 use App\Models\Departure;
+use Filament\Tables\Table;
 use App\Models\Coordinator;
 use App\Models\Programming;
+use Illuminate\Support\Str;
+
 use App\Models\GroupCompany;
+
+use Filament\Resources\Resource;
+use Filament\Tables\Filters\Filter;
+
+use Filament\Support\Enums\Alignment;
+use Filament\Forms\Components\Section;
+
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ColorColumn;
+use Filament\Forms\Components\DatePicker;
+
+use Filament\Tables\Columns\ToggleColumn;
+use Filament\Tables\Filters\SelectFilter;
+use Illuminate\Database\Eloquent\Builder;
+use pxlrbt\FilamentExcel\Exports\ExcelExport;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\ProgrammingResource\Pages;
+use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
+use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
+use App\Filament\Resources\ProgrammingResource\RelationManagers;
 
 class ProgrammingResource extends Resource
 {
@@ -80,23 +81,45 @@ class ProgrammingResource extends Resource
                                 ->required()
                                 ->mask('999999')
                                 ->maxLength(6),
+                            Forms\Components\Select::make('supplier_id')
+                                ->label('Proveedor')
+                                ->relationship('supplier', 'name')
+                                ->preload()
+                                ->required()
+                                ->optionsLimit(5)
+                                ->live()
+                                ->createOptionForm([
+                                    Forms\Components\TextInput::make('name')
+                                    ->label('Proveedor')
+                                    ->required()
+                                ])
+                                ->createOptionUsing(function (array $data): int {
+                                    $newsupplier = Supplier::create([
+                                        'name' => $data['name'] = Str::upper($data['name']),
+                                    ]);
+                                    return $newsupplier->id;
+                                }),
                         ])
                         ->createOptionUsing(function (array $data): int {
                             $newaction = Action::create([
                                 'naction' => $data['naction'],
                                 'denomination' => $data['denomination'] = Str::upper($data['denomination']),
-                                'nhours' => $data['nhours']
+                                'nhours' => $data['nhours'],
+                                'supplier_id' => $data['supplier_id']
                             ]);
 
                             return $newaction->id;
                         })
                         ->afterStateUpdated(function (Set $set, Get $get) {
-                            $action = Action::findOrfail($get('action_id'));                 
+                            $action = Action::findOrfail($get('action_id'));                
                             $set('naction', $action->naction);
                             if ($action->naction == '0000') {
                                 $set('ngroup', '0000');
                             }
                             $set('nhours', $action->nhours);
+
+                            $supplier = Supplier::findOrfail($action->supplier_id);
+                            $set('supplier', $supplier->name);
                         })
                         ->searchable()
                         ->required()
@@ -146,25 +169,10 @@ class ProgrammingResource extends Resource
                         ])
                         ->required()
                         ->optionsLimit(5),
-                    Forms\Components\Select::make('supplier_id')
+                    Forms\Components\TextInput::make('supplier')
                         ->label('Proveedor')
-                        ->relationship('supplier', 'name')
-                        ->preload()
                         ->required()
-                        ->optionsLimit(5)
-                        ->live()
-                        ->createOptionForm([
-                            Forms\Components\TextInput::make('name')
-                            ->label('Proveedor')
-                            ->required()
-                        ])
-                        ->createOptionUsing(function (array $data): int {
-                            $newsupplier = Supplier::create([
-                                'name' => $data['name'] = Str::upper($data['name']),
-                            ]);
-    
-                            return $newsupplier->id;
-                        }),
+                        ->readonly(),
                     Forms\Components\Select::make('tutor_id')
                         ->label('Tutor')
                         ->relationship('tutor', 'name')
@@ -203,12 +211,10 @@ class ProgrammingResource extends Resource
 
                             return $newcoordinator->id;
                         }),
-                    Forms\Components\Select::make('agent_id')
-                        ->label('Agente')
-                        ->relationship('agent', 'name')
-                        ->preload()
+                    Forms\Components\TextInput::make('agent')
+                        ->label('Agente Comercial')
                         ->required()
-                        ->optionsLimit(5),
+                        ->readonly(),
                 ])
                 ->compact()
                 ->columns(3),
@@ -278,21 +284,53 @@ class ProgrammingResource extends Resource
                             Forms\Components\TextInput::make('company')
                                 ->label('Nombre de Empresa')
                                 ->required(),
+                            Forms\Components\Select::make('agent_id')
+                                ->label('Agente Comercial')
+                                ->relationship('agent', 'name')
+                                ->preload()
+                                ->required()
+                                ->optionsLimit(5)
+                                ->live()
+                                ->createOptionForm([
+                                    Forms\Components\TextInput::make('name')
+                                    ->label('Agente Comercial')
+                                    ->required()
+                                ])
+                                ->createOptionUsing(function (array $data): int {
+                                    $newagent = Agent::create([
+                                        'name' => $data['name'] = Str::upper($data['name']),
+                                    ]);
+                                    return $newagent->id;
+                                }),
                             Forms\Components\Select::make('groupcompany_id')
                                 ->label('Grupo Empresarial')
                                 ->relationship('groupcompany', 'name')
                                 ->preload()
                                 ->searchable()
+                                ->optionsLimit(5)
+                                ->live()
+                                ->createOptionForm([
+                                    Forms\Components\TextInput::make('name')
+                                    ->label('Grupo Empresarial')
+                                    ->required()
+                                ])
+                                ->createOptionUsing(function (array $data): int {
+                                    $newgroupcompany = GroupCompany::create([
+                                        'name' => $data['name'] = Str::upper($data['name']),
+                                    ]);
+                                    return $newgroupcompany->id;
+                                }),
                         ])
                         ->createOptionUsing(function (array $data): int {
                             $newcompany = Company::create([
                                 'company' => $data['company'] = Str::upper($data['company']),
+                                'agent_id' => $data['agent_id'],
                                 'groupcompany_id' => $data['groupcompany_id']
                             ]);
     
                             return $newcompany->id;
                         })
-                        ->editOptionForm([
+                        /* ->editOptionForm([
                             Forms\Components\TextInput::make('company')
                                 ->label('Nombre de Empresa')    
                                 ->required(),
@@ -301,18 +339,24 @@ class ProgrammingResource extends Resource
                                 ->preload()
                                 ->relationship('groupcompany', 'name')
                                 ->searchable()
-                        ])
+                        ]) */
                         ->afterStateUpdated(function (Set $set, Get $get) {
-                            $company = Company::findOrfail($get('company_id'));                
-                            $set('groupcompany_id2', $company->groupcompany_id);
+                            $company = Company::findOrfail($get('company_id'));
+                            $agent = Agent::findOrfail($company->agent_id);
+                            if ($company->groupcompany_id != null) {
+                                $groupcompany = GroupCompany::findOrfail($company->groupcompany_id);
+                                $set('groupcompany', $groupcompany->name);
+                            } else {
+                                $groupcompany = "";
+                                $set('groupcompany', $groupcompany);
+                            }              
+                            $set('agent', $agent->name);
                         })
                     ->live()
                     ->optionsLimit(5),
-                    Forms\Components\Select::make('groupcompany_id2')
+                    Forms\Components\TextInput::make('groupcompany')
                         ->label('Grupo Empresarial')
-                        ->preload()
-                        ->live()
-                        ->relationship('groupcompany', 'name'),
+                        ->readonly()
                 ])
                 ->compact()
                 ->columns(2),
@@ -458,6 +502,10 @@ class ProgrammingResource extends Resource
                     ->size(TextColumn\TextColumnSize::ExtraSmall)
                     ->alignment(Alignment::Center)
                     ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('platform.name')
+                    ->label('Campus')
+                    ->alignment(Alignment::Center)
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\ColorColumn::make('platform.color')
                     ->label('Plataforma')
                     ->alignment(Alignment::Center),
@@ -517,13 +565,13 @@ class ProgrammingResource extends Resource
                     ->alignment(Alignment::Center)
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('agent.name')
+                Tables\Columns\TextColumn::make('name')
                     ->label('Comercial')
                     ->size(TextColumn\TextColumnSize::ExtraSmall)
                     ->alignment(Alignment::Center)
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('supplier.name')
+                Tables\Columns\TextColumn::make('name')
                     ->label('Proveedor')
                     ->size(TextColumn\TextColumnSize::ExtraSmall)
                     ->alignment(Alignment::Center)
@@ -598,9 +646,9 @@ class ProgrammingResource extends Resource
                 SelectFilter::make('coordinators')
                     ->relationship('coordinator', 'name')
                     ->label('Coordinador'),
-                SelectFilter::make('agents')
+                /* SelectFilter::make('agents')
                     ->relationship('agent', 'name')
-                    ->label('Agente'),
+                    ->label('Agente'), */
                 SelectFilter::make('companies')
                     ->relationship('company', 'company')
                     ->label('Empresa'),

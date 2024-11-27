@@ -2,23 +2,24 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\CompanyResource\Pages;
-use App\Filament\Resources\CompanyResource\RelationManagers;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Forms\Components\Select;
-use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Table;
-use Filament\Forms\Set;
-
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-
+use App\Models\Agent;
 use App\Models\Company;
+use Filament\Forms\Set;
+use Filament\Forms\Form;
+use Filament\Tables\Table;
+use Illuminate\Support\Str;
 use App\Models\GroupCompany;
 
-use Illuminate\Support\Str;
+use Filament\Resources\Resource;
+use Filament\Forms\Components\Select;
+
+use Illuminate\Database\Eloquent\Builder;
+use App\Filament\Resources\CompanyResource\Pages;
+
+use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\CompanyResource\RelationManagers;
 
 class CompanyResource extends Resource
 {
@@ -43,6 +44,23 @@ class CompanyResource extends Resource
                     ->label('Nombre de Empresa')
                     ->required()
                     ->maxLength(255),
+                Forms\Components\Select::make('agent_id')
+                    ->label('Agente Comercial')
+                    ->relationship('agent', 'name')
+                    ->preload()
+                    ->live()
+                    ->createOptionForm([
+                        Forms\Components\TextInput::make('name')
+                            ->label('Nuevo Agente Comercial')
+                            ->required(),
+                    ])
+                    ->createOptionUsing(function (array $data): int {
+                        $newgagent = Agent::create([
+                            'name' => $data['name'] = Str::upper($data['name'])
+                        ]);
+
+                        return $newgagent->id;
+                    }),
                 Forms\Components\Select::make('groupcompany_id')
                     ->label('Grupo Empresarial')
                     ->relationship('groupcompany', 'name')
@@ -59,9 +77,9 @@ class CompanyResource extends Resource
                         ]);
 
                         return $newgroupcompany->id;
-                        
                     })
-            ]);
+            ])
+            ->columns(3);
     }
 
     public static function table(Table $table): Table
@@ -70,6 +88,11 @@ class CompanyResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('company')
                     ->label('Nombre de Empresa')
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('agent.name')
+                    ->label('Agente Comercial')
+                    ->numeric()
                     ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('groupcompany.name')

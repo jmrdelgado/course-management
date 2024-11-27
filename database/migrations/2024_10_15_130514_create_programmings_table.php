@@ -25,12 +25,12 @@ return new class extends Migration
             $table->date('end_date');
             $table->integer('number_students');
             $table->foreignId('company_id')->constrained()->onUpdate('cascade');
-            $table->foreignId('groupcompany_id')->nullable()->constrained()->onUpdate('cascade');
+            $table->string('groupcompany')->nullable();
             $table->longText('observations')->nullable();
             $table->foreignId('tutor_id')->constrained()->onUpdate('cascade');
             $table->foreignId('coordinator_id')->constrained()->onUpdate('cascade');
-            $table->foreignId('agent_id')->constrained()->onUpdate('cascade');
-            $table->foreignId('supplier_id')->constrained()->onUpdate('cascade');
+            $table->string('agent');
+            $table->string('supplier');
             $table->enum('course_type', ['Bonificado', 'Impartido', 'Privado', 'Gestionado']);
             $table->decimal('student_cost', 6, 2);
             $table->decimal('cost', 6, 2);

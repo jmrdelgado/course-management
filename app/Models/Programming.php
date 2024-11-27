@@ -2,18 +2,16 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Model;
-
-use App\Models\Action;
-use App\Models\Platform;
-use App\Models\Supplier;
-use App\Models\Departure;
 use App\Models\Tutor;
+use App\Models\Action;
+use App\Models\Company;
+
+use App\Models\Platform;
+use App\Models\Departure;
 use App\Models\Coordinator;
-use App\Models\Agent;
-use App\Models\GroupCompany;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Programming extends Model
 {
@@ -32,11 +30,12 @@ class Programming extends Model
         'end_date',
         'number_students',
         'company_id',
+        'groupcompany',
         'observations',
         'tutor_id',
         'coordinator_id',
-        'agent_id',
-        'supplier_id',
+        'agent',
+        'supplier',
         'course_type',
         'student_cost',
         'cost',
@@ -72,16 +71,6 @@ class Programming extends Model
     }
 
     /**
-     * Get the supplier that owns the Programming
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function supplier(): BelongsTo
-    {
-        return $this->belongsTo(Supplier::class);
-    }
-
-    /**
      * Get the departure that owns the Programming
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
@@ -112,16 +101,6 @@ class Programming extends Model
     }
 
     /**
-     * Get the agent that owns the Programming
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function agent(): BelongsTo
-    {
-        return $this->belongsTo(Agent::class);
-    }
-
-    /**
      * Get the company that owns the Programming
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
@@ -129,15 +108,5 @@ class Programming extends Model
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
-    }
-
-    /**
-     * Get the groupcompany that owns the Programming
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function groupcompany(): BelongsTo
-    {
-        return $this->belongsTo(GroupCompany::class);
     }
 }

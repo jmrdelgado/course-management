@@ -2,11 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Models\Company;
 use Illuminate\Database\Eloquent\Model;
-
-use App\Models\Programming;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Agent extends Model
 {
@@ -18,12 +17,12 @@ class Agent extends Model
     ];
 
     /**
-     * Get all of the cursos for the Agent
+     * Get all of the companies for the GroupCompany
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function cursos(): HasMany
+    public function companies(): HasMany
     {
-        return $this->hasMany(Programming::class);
+        return $this->hasMany(Company::class);
     }
 }

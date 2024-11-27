@@ -18,6 +18,7 @@ return new class extends Migration
                 ->nullable()
                 ->constrained()
                 ->onUpdate('cascade');
+            $table->foreignId('agent_id')->constrained()->onUpdate('cascade');
             $table->timestamps();
         });
     }

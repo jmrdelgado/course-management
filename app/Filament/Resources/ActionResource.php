@@ -2,16 +2,19 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\ActionResource\Pages;
-use App\Filament\Resources\ActionResource\RelationManagers;
-use App\Models\Action;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
+use App\Models\Action;
+use App\Models\Supplier;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
+use Illuminate\Support\Str;
+use Filament\Resources\Resource;
+use Filament\Support\Enums\Alignment;
 use Illuminate\Database\Eloquent\Builder;
+use App\Filament\Resources\ActionResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\ActionResource\RelationManagers;
 
 class ActionResource extends Resource
 {
@@ -44,8 +47,27 @@ class ActionResource extends Resource
                     ->required()
                     ->mask('999999')
                     ->maxLength(6),
+                Forms\Components\Select::make('supplier_id')
+                    ->label('Proveedor')
+                    ->relationship('supplier', 'name')
+                    ->preload()
+                    ->required()
+                    ->optionsLimit(10)
+                    ->live()
+                    ->createOptionForm([
+                        Forms\Components\TextInput::make('name')
+                        ->label('Proveedor')
+                        ->required()
+                    ])
+                    ->createOptionUsing(function (array $data): int {
+                        $newsupplier = Supplier::create([
+                            'name' => $data['name'] = Str::upper($data['name']),
+                        ]);
+
+                        return $newsupplier->id;
+                    }),
             ])
-            ->columns(3);
+            ->columns(4);
     }
 
     public static function table(Table $table): Table
@@ -62,6 +84,11 @@ class ActionResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('nhours')
                     ->label('Nº Horas'),
+                Tables\Columns\TextColumn::make('supplier.name')
+                    ->label('Proveedor')
+                    ->alignment(Alignment::Center)
+                    ->searchable()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

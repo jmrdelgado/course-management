@@ -2,11 +2,13 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Models\Supplier;
+use App\Models\Programming;
 use Illuminate\Database\Eloquent\Model;
 
-use App\Models\Programming;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Action extends Model
 {
@@ -21,6 +23,7 @@ class Action extends Model
         'naction',
         'denomination',
         'nhours',
+        'supplier_id'
     ];
 
     /**
@@ -31,5 +34,15 @@ class Action extends Model
     public function cursos(): HasMany
     {
         return $this->hasMany(Programming::class);
+    }
+
+     /**
+     * Get the supplier that owns the Actionis
+     *
+     * @return BelongsTo
+     */
+    public function supplier(): BelongsTo
+    {
+        return $this->belongsTo(Supplier::class);
     }
 }

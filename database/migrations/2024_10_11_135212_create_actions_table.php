@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('naction',6);
             $table->string('denomination');
             $table->string('nhours', 6);
+            $table->foreignId('supplier_id')->constrained()->onUpdate('cascade');
             $table->timestamps();
         });
     }
