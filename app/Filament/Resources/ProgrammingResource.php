@@ -211,10 +211,6 @@ class ProgrammingResource extends Resource
 
                             return $newcoordinator->id;
                         }),
-                    Forms\Components\TextInput::make('agent')
-                        ->label('Agente Comercial')
-                        ->required()
-                        ->readonly(),
                 ])
                 ->compact()
                 ->columns(3),
@@ -356,10 +352,14 @@ class ProgrammingResource extends Resource
                     ->optionsLimit(5),
                     Forms\Components\TextInput::make('groupcompany')
                         ->label('Grupo Empresarial')
-                        ->readonly()
+                        ->readonly(),
+                    Forms\Components\TextInput::make('agent')
+                        ->label('Agente Comercial')
+                        ->required()
+                        ->readonly(),
                 ])
                 ->compact()
-                ->columns(2),
+                ->columns(3),
                 
                 Section::make('Datos económicos')
                 ->schema([
