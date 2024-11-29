@@ -24,13 +24,14 @@ use App\Models\GroupCompany;
 use Filament\Resources\Resource;
 use Filament\Tables\Filters\Filter;
 
+use Tables\Actions\ReplicateAction;
 use Filament\Support\Enums\Alignment;
-use Filament\Forms\Components\Section;
 
+use Filament\Forms\Components\Section;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ColorColumn;
-use Filament\Forms\Components\DatePicker;
 
+use Filament\Forms\Components\DatePicker;
 use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
@@ -158,7 +159,19 @@ class ProgrammingResource extends Resource
                     Forms\Components\TextInput::make('number_students')
                         ->label('Nº Alumnos')
                         ->required()
-                        ->numeric(),
+                        ->numeric()
+                        ->live(onBlur: true)
+                        ->afterStateUpdated(function (Set $set, Get $get) {
+                            $nun_alum = $get('number_students');
+                            $cost = $get('student_cost');
+                            if ($cost > 0) {
+                                $total_cost = $cost * $nun_alum;
+                                $set('cost', $total_cost);
+                                $set('project_cost', 0);
+                            } else {
+                                $set('cost', 0);
+                            }
+                        }),
                     Forms\Components\Select::make('course_type')
                         ->label('Tipo Curso')
                         ->options([
@@ -666,6 +679,7 @@ class ProgrammingResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\ReplicateAction::make()
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
