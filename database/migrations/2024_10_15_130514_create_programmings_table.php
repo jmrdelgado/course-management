@@ -15,12 +15,14 @@ return new class extends Migration
             $table->id();
             $table->string('naction', 6);
             $table->string('ngroup', 6);
+            $table->string('cod_fundae', 8)->default(0);
             $table->foreignId('action_id')->constrained()->onUpdate('cascade');
-            $table->string('modality')->default('TF');
+            $table->string('modality',6);
             $table->foreignId('platform_id')->constrained()->onUpdate('cascade');
-            $table->integer('nhours');
+            $table->integer('nhoursp')->default(0);
+            $table->integer('nhourstf')->default(0);
+            $table->integer('nhourst')->default(0);
             $table->date('communication_date')->nullable();
-            $table->foreignId('departure_id')->constrained()->onUpdate('cascade');
             $table->date('start_date');
             $table->date('end_date');
             $table->integer('number_students');

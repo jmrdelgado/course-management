@@ -14,8 +14,12 @@ return new class extends Migration
         Schema::create('actions', function (Blueprint $table) {
             $table->id();
             $table->string('naction',6);
+            $table->string('cod_fundae', 8)->default(0)->nullable();
             $table->string('denomination');
-            $table->string('nhours', 6);
+            $table->enum('modality', ['P','M','AV','TF']);
+            $table->string('nhoursp', 6)->default(0);
+            $table->string('nhourstf', 6)->default(0);
+            $table->string('nhourst', 6)->default(0);
             $table->foreignId('supplier_id')->constrained()->onUpdate('cascade');
             $table->timestamps();
         });
