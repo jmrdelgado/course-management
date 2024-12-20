@@ -5,12 +5,16 @@ namespace App\Filament\Resources;
 use Filament\Forms;
 use Filament\Tables;
 use App\Models\Action;
+use Filament\Forms\Get;
+use Filament\Forms\Set;
 use App\Models\Supplier;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
 use Filament\Resources\Resource;
 use Filament\Support\Enums\Alignment;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\ActionResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -42,11 +46,56 @@ class ActionResource extends Resource
                 Forms\Components\TextInput::make('denomination')
                     ->label('Denominación')
                     ->required(),
-                Forms\Components\TextInput::make('nhours')
-                    ->label('Nº Horas')
+                Forms\Components\Select::make('modality')
+                    ->label('Modalidad')
+                    ->required()
+                    ->options(
+                        [
+                            'P' => 'P',
+                            'M' => 'M',
+                            'AV' => 'AV',
+                            'TF' => 'TF'
+                        ]
+                    ),
+                Forms\Components\TextInput::make('cod_fundae')
+                    ->label('Cód. Fundae')
+                    ->mask('99999999')
+                    ->default(0)
+                    ->maxLength(8),
+                Forms\Components\TextInput::make('nhoursp')
+                    ->label('Horas Presenciales')
                     ->required()
                     ->mask('999999')
-                    ->maxLength(6),
+                    ->default(0)
+                    ->maxLength(6)
+                    ->live(onBlur: true)
+                    ->afterStateUpdated(function (Set $set, Get $get) {
+                        $hp = $get('nhoursp');
+                        $htf = $get('nhourstf');
+                        $ht = $hp + $htf;
+                        $set('nhourst', $ht);
+                    }),
+                Forms\Components\TextInput::make('nhourstf')
+                    ->label('Horas Teleformación')
+                    ->required()
+                    ->mask('999999')
+                    ->default(0)
+                    ->maxLength(6)
+                    ->live(onBlur: true)
+                    ->afterStateUpdated(function (Set $set, Get $get) {
+                        $hp = $get('nhoursp');
+                        $htf = $get('nhourstf');
+                        $ht = $hp + $htf;
+                        $set('nhourst', $ht);
+                    }),
+                Forms\Components\TextInput::make('nhourst')
+                    ->label('Horas Totales')
+                    ->required()
+                    ->mask('999999')
+                    ->maxLength(6)
+                    ->default(0)
+                    ->disabled()
+                    ->dehydrated(true),
                 Forms\Components\Select::make('supplier_id')
                     ->label('Proveedor')
                     ->relationship('supplier', 'name')
@@ -76,16 +125,30 @@ class ActionResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('naction')
                     ->label('Nº Acción')
+                    ->size(TextColumn\TextColumnSize::ExtraSmall)
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('cod_fundae')
+                    ->label('Cód. Fundae')
+                    ->size(TextColumn\TextColumnSize::ExtraSmall)
                     ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('denomination')
                     ->label('Denominación')
+                    ->size(TextColumn\TextColumnSize::ExtraSmall)
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('nhours')
-                    ->label('Nº Horas'),
+                Tables\Columns\TextColumn::make('modality')
+                    ->label('Modalidad')
+                    ->size(TextColumn\TextColumnSize::ExtraSmall)
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('nhourst')
+                    ->label('Horas Totales')
+                    ->size(TextColumn\TextColumnSize::ExtraSmall),
                 Tables\Columns\TextColumn::make('supplier.name')
                     ->label('Proveedor')
+                    ->size(TextColumn\TextColumnSize::ExtraSmall)
                     ->alignment(Alignment::Center)
                     ->searchable()
                     ->sortable(),
@@ -99,7 +162,16 @@ class ActionResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                SelectFilter::make('modality')
+                    ->options(
+                        [
+                            'P' => 'P',
+                            'M' => 'M',
+                            'AV' => 'AV',
+                            'TF' => 'TF'
+                        ]
+                    )
+                    ->label('Modalidad'),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

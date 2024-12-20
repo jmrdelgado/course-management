@@ -25,12 +25,13 @@ use Filament\Resources\Resource;
 use Filament\Tables\Filters\Filter;
 
 use Tables\Actions\ReplicateAction;
-use Filament\Support\Enums\Alignment;
+use Illuminate\Support\Facades\Auth;
 
+use Filament\Support\Enums\Alignment;
 use Filament\Forms\Components\Section;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Columns\ColorColumn;
 
+use Filament\Tables\Columns\ColorColumn;
 use Filament\Forms\Components\DatePicker;
 use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Filters\SelectFilter;
@@ -57,6 +58,18 @@ class ProgrammingResource extends Resource
         return static::getModel()::count();
     }
 
+    //Mostramos solo registros del usuario conectado
+    public static function getEloquentQuery(): Builder
+    {
+        if (Auth::user()->hasRole('panel_user')) {
+            return parent::getEloquentQuery()->where('modality', 'TF');
+        } elseif (Auth::user()->hasRole('panel_user_presencial')) {
+            return parent::getEloquentQuery()->where('modality', '=','P')->Orwhere('modality', '=', 'M')->Orwhere('modality', '=', 'AV');
+        } else {
+            return parent::getEloquentQuery();
+        }   
+    }
+
     public static function form(Form $form): Form
     {
         return $form
@@ -77,9 +90,38 @@ class ProgrammingResource extends Resource
                             Forms\Components\TextInput::make('denomination')
                                 ->label('Denominación')
                                 ->required(),
-                            Forms\Components\TextInput::make('nhours')
-                                ->label('Nº Horas')
+                            Forms\Components\Select::make('modality')
+                                ->label('Modalidad')
                                 ->required()
+                                ->options(
+                                    [
+                                        'P' => 'P',
+                                        'M' => 'M',
+                                        'AV' => 'AV',
+                                        'TF' => 'TF'
+                                    ]
+                                ),
+                            Forms\Components\TextInput::make('cod_fundae')
+                                ->label('Cód. Fundae')
+                                ->mask('99999999')
+                                ->default(0)
+                                ->maxLength(8),
+                            Forms\Components\TextInput::make('nhoursp')
+                                ->label('Horas P.')
+                                ->required()
+                                ->default(0)
+                                ->mask('999999')
+                                ->maxLength(6),
+                            Forms\Components\TextInput::make('nhourstf')
+                                ->label('Horas TF.')
+                                ->required()
+                                ->default(0)
+                                ->mask('999999')
+                                ->maxLength(6),
+                            Forms\Components\TextInput::make('nhourst')
+                                ->label('Horas T.')
+                                ->required()
+                                ->default(0)
                                 ->mask('999999')
                                 ->maxLength(6),
                             Forms\Components\Select::make('supplier_id')
@@ -105,7 +147,11 @@ class ProgrammingResource extends Resource
                             $newaction = Action::create([
                                 'naction' => $data['naction'],
                                 'denomination' => $data['denomination'] = Str::upper($data['denomination']),
-                                'nhours' => $data['nhours'],
+                                'modality' => $data['modality'],
+                                'cod_fundae' => $data['cod_fundae'],
+                                'nhoursp' => $data['nhoursp'],
+                                'nhourstf' => $data['nhourstf'],
+                                'nhourst' => $data['nhourst'],
                                 'supplier_id' => $data['supplier_id']
                             ]);
 
@@ -117,7 +163,11 @@ class ProgrammingResource extends Resource
                             if ($action->naction == '0000') {
                                 $set('ngroup', '0000');
                             }
-                            $set('nhours', $action->nhours);
+                            $set('cod_fundae', $action->cod_fundae);
+                            $set('nhoursp', $action->nhoursp);
+                            $set('nhourstf', $action->nhourstf);
+                            $set('nhourst', $action->nhourst);
+                            $set('modality', $action->modality);
 
                             $supplier = Supplier::findOrfail($action->supplier_id);
                             $set('supplier', $supplier->name);
@@ -129,6 +179,12 @@ class ProgrammingResource extends Resource
                 ->compact(),
                 Section::make('Datos identificativos')
                 ->schema([
+                    Forms\Components\TextInput::make('cod_fundae')
+                        ->label('Cód. Fundae')
+                        ->mask('99999999')
+                        ->default(0)
+                        ->maxLength(8)
+                        ->readonly(),
                     Forms\Components\TextInput::make('naction')
                         ->label('Nº Acción')
                         ->numeric()
@@ -143,7 +199,21 @@ class ProgrammingResource extends Resource
                         ->label('Modalidad')
                         ->required()
                         ->maxLength(255)
-                        ->default('TF')
+                        ->readonly(),
+                    Forms\Components\TextInput::make('nhoursp')
+                        ->label('Horas P.')
+                        ->required()
+                        ->numeric()
+                        ->readonly(),
+                    Forms\Components\TextInput::make('nhourstf')
+                        ->label('Horas TF.')
+                        ->required()
+                        ->numeric()
+                        ->readonly(),
+                    Forms\Components\TextInput::make('nhourst')
+                        ->label('Horas T.')
+                        ->required()
+                        ->numeric()
                         ->readonly(),
                     Forms\Components\Select::make('platform_id')
                         ->label('Plataforma')
@@ -151,11 +221,6 @@ class ProgrammingResource extends Resource
                         ->preload()
                         ->required()
                         ->optionsLimit(5),
-                    Forms\Components\TextInput::make('nhours')
-                        ->label('Nº Horas')
-                        ->required()
-                        ->numeric()
-                        ->readonly(),
                     Forms\Components\TextInput::make('number_students')
                         ->label('Nº Alumnos')
                         ->required()
@@ -226,13 +291,13 @@ class ProgrammingResource extends Resource
                         }),
                 ])
                 ->compact()
-                ->columns(3),
+                ->columns(4),
 
                 Section::make('Datos de comunicación')
                 ->schema([
                     Forms\Components\DatePicker::make('communication_date')
                         ->label('F.Comunicación'),
-                    Forms\Components\Select::make('departure_id')
+                    /* Forms\Components\Select::make('departure_id')
                         ->label('F.Salida')
                         ->relationship('departure', 'start_at', function ($query) {
                             $datos = $query->selectRaw("id, DATE_FORMAT(start_at, '%d-%m-%Y') as start_at");
@@ -268,17 +333,16 @@ class ProgrammingResource extends Resource
                         ->afterStateUpdated(function (Set $set, Get $get) {
                             $newdate = Departure::findOrfail($get('departure_id'));
                             $set('start_date', $newdate->start_at);
-                        }),
-                    Forms\Components\TextInput::make('start_date')
+                        }), */
+                    Forms\Components\DatePicker::make('start_date')
                         ->label('F.Inicio')
-                        ->disabled()
-                        ->dehydrated(true),
+                        ->required(),
                     Forms\Components\DatePicker::make('end_date')
                         ->label('F.Fin')
                         ->required(),
                 ])
                 ->compact()
-                ->columns(4),
+                ->columns(3),
 
                 Section::make('Datos de la empresa')
                 ->schema([
@@ -339,16 +403,6 @@ class ProgrammingResource extends Resource
     
                             return $newcompany->id;
                         })
-                        /* ->editOptionForm([
-                            Forms\Components\TextInput::make('company')
-                                ->label('Nombre de Empresa')    
-                                ->required(),
-                            Forms\Components\Select::make('groupcompany_id')
-                                ->label('Grupo Empresarial')
-                                ->preload()
-                                ->relationship('groupcompany', 'name')
-                                ->searchable()
-                        ]) */
                         ->afterStateUpdated(function (Set $set, Get $get) {
                             $company = Company::findOrfail($get('company_id'));
                             $agent = Agent::findOrfail($company->agent_id);
@@ -513,8 +567,7 @@ class ProgrammingResource extends Resource
                 Tables\Columns\TextColumn::make('modality')
                     ->label('Modalidad')
                     ->size(TextColumn\TextColumnSize::ExtraSmall)
-                    ->alignment(Alignment::Center)
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->alignment(Alignment::Center),
                 Tables\Columns\TextColumn::make('platform.name')
                     ->label('Campus')
                     ->alignment(Alignment::Center)
@@ -522,7 +575,7 @@ class ProgrammingResource extends Resource
                 Tables\Columns\ColorColumn::make('platform.color')
                     ->label('Plataforma')
                     ->alignment(Alignment::Center),
-                Tables\Columns\TextColumn::make('nhours')
+                Tables\Columns\TextColumn::make('nhourst')
                     ->label('Horas')
                     ->size(TextColumn\TextColumnSize::ExtraSmall)
                     ->alignment(Alignment::Center)

@@ -21,8 +21,12 @@ class Action extends Model
      */
     protected $fillable = [
         'naction',
+        'cod_fundae',
         'denomination',
-        'nhours',
+        'modality',
+        'nhoursp',
+        'nhourstf',
+        'nhourst',
         'supplier_id'
     ];
 
