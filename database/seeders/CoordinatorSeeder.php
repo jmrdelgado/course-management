@@ -19,7 +19,7 @@ class CoordinatorSeeder extends Seeder
             ]
         ];
 
-        foreach ($$coordinators as $coordinator) {
+        foreach ($coordinators as $coordinator) {
             Coordinator::create($coordinator);
         }
     }
