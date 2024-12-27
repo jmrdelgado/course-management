@@ -25,7 +25,8 @@ class DatabaseSeeder extends Seeder
                 SupplierSeeder::class,
                 AgentSeeder::class,
                 TutorSeeder::class,
-                CoordinatorSeeder::class
+                CoordinatorSeeder::class,
+                PlatformSeeder::class
             ]
         );
     }
