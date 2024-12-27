@@ -23,7 +23,9 @@ class DatabaseSeeder extends Seeder
             [
                 UserSeeder::class,
                 SupplierSeeder::class,
-                AgentSeeder::class
+                AgentSeeder::class,
+                TutorSeeder::class,
+                Coordinator::class
             ]
         );
     }
