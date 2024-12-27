@@ -12,6 +12,7 @@ use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
 use Filament\Resources\Resource;
+use Illuminate\Support\Facades\Auth;
 use Filament\Support\Enums\Alignment;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
@@ -32,6 +33,18 @@ class ActionResource extends Resource
     public static function getNavigationBadge(): ?string
     {
         return static::getModel()::count();
+    }
+
+    //Mostramos solo registros del usuario conectado
+    public static function getEloquentQuery(): Builder
+    {
+        if (Auth::user()->hasRole('panel_user')) {
+            return parent::getEloquentQuery()->where('modality', 'TF');
+        } elseif (Auth::user()->hasRole('panel_user_presencial')) {
+            return parent::getEloquentQuery()->where('modality', '=','P')->Orwhere('modality', '=', 'M')->Orwhere('modality', '=', 'AV');
+        } else {
+            return parent::getEloquentQuery();
+        }   
     }
 
     public static function form(Form $form): Form
