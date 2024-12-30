@@ -7,14 +7,14 @@ on:
 
 jobs:
   deploy:
-    runs-on: debian-latest
+    runs-on: ubuntu-latest
 
     steps:
     - name: Checkout del repositorio
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
 
     - name: Configurar entorno PHP
-      uses: shivammathur/setup-php@v2
+      uses: shivammathur/setup-php@v4
       with:
         php-version: '8.2.26'
 
@@ -30,7 +30,7 @@ jobs:
       #run: php artisan config:cache
 
     - name: Deploy to shared hosting
-      uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+      uses: SamKirkland/FTP-Deploy-Action@v4.3.5
       with:
         server: ${{ secrets.FTP_HOST }}
         username: ${{ secrets.FTP_USERNAME }}
