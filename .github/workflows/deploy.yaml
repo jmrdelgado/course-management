@@ -13,11 +13,6 @@ jobs:
     - name: Checkout del repositorio
       uses: actions/checkout@v4
 
-    - name: Configurar entorno PHP
-      uses: shivammathur/setup-php@v3
-      with:
-        php-version: '8.2.26'
-
    # - name: Install dependencies
    #   run: composer install --no-dev --prefer-dist --no-scripts --no-progress --no-suggest
 
