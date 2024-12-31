@@ -11,7 +11,7 @@ jobs:
 
     steps:
     - name: Checkout del repositorio
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
    # - name: Install dependencies
    #   run: composer install --no-dev --prefer-dist --no-scripts --no-progress --no-suggest
@@ -25,9 +25,9 @@ jobs:
       #run: php artisan config:cache
 
     - name: Deploy to shared hosting
-      uses: SamKirkland/FTP-Deploy-Action@v3.1.1
+      uses: SamKirkland/FTP-Deploy-Action@v4.3.5
       with:
-        ftp-server: sftp://${{ secrets.FTP_HOST }}
-        ftp-username: ${{ secrets.FTP_USERNAME }}
-        ftp-password: ${{ secrets.FTP_PASSWORD }}
-        local-dir: ${{ secrets.FTP_DESTINATION }}
+        server: sftp://${{ secrets.FTP_HOST }}
+        username: ${{ secrets.FTP_USERNAME }}
+        password: ${{ secrets.FTP_PASSWORD }}
+        server-dir: ${{ secrets.FTP_DESTINATION }}
