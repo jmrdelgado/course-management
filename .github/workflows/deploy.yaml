@@ -25,7 +25,7 @@ jobs:
       #run: php artisan config:cache
 
     - name: Deploy to shared hosting
-      uses: SamKirkland/FTP-Deploy-Action@v3.1.2
+      uses: SamKirkland/FTP-Deploy-Action@v3.1.1
       with:
         ftp-server: sftp://${{ secrets.FTP_HOST }}
         ftp-username: ${{ secrets.FTP_USERNAME }}
