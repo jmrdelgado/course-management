@@ -683,9 +683,14 @@ class ProgrammingResource extends Resource
                 SelectFilter::make('coordinators')
                     ->relationship('coordinator', 'name')
                     ->label('Coordinador'),
-                /* SelectFilter::make('agents')
-                    ->relationship('agent', 'name')
-                    ->label('Agente'), */
+                SelectFilter::make('modality')
+                    ->options([
+                        'P' => 'P',
+                        'M' => 'M',
+                        'AV' => 'AV',
+                        'TF' => 'TF'
+                    ])
+                    ->label('Modalidad'),
                 SelectFilter::make('companies')
                     ->relationship('company', 'company')
                     ->label('Empresa'),
