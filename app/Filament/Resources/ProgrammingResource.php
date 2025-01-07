@@ -246,6 +246,7 @@ class ProgrammingResource extends Resource
                             'Privado' => 'Privado'
                         ])
                         ->required()
+                        ->allowHtml()
                         ->optionsLimit(5),
                     Forms\Components\TextInput::make('supplier')
                         ->label('Proveedor')
@@ -297,43 +298,6 @@ class ProgrammingResource extends Resource
                 ->schema([
                     Forms\Components\DatePicker::make('communication_date')
                         ->label('F.Comunicación'),
-                    /* Forms\Components\Select::make('departure_id')
-                        ->label('F.Salida')
-                        ->relationship('departure', 'start_at', function ($query) {
-                            $datos = $query->selectRaw("id, DATE_FORMAT(start_at, '%d-%m-%Y') as start_at");
-                            return $datos;
-                            })
-                        ->preload()
-                        ->live()
-                        ->required()
-                        ->createOptionForm([
-                            Forms\Components\TextInput::make('title')
-                                ->label('Tipo Evento')
-                                ->required()
-                                ->maxLength(255),
-                            Forms\Components\ColorPicker::make('color')
-                                ->label('Color identificativo'),
-                            Forms\Components\DatePicker::make('start_at')
-                                ->label('Fecha Salida')
-                                ->required(),
-                            Forms\Components\DatePicker::make('end_at')
-                                ->label('Fecha Fin')
-                                ->required(),
-                        ])
-                        ->createOptionUsing(function (array $data): int {
-                            $newdeparture = Departure::create([
-                                'title' => $data['title'] = Str::upper($data['title']),
-                                'color' => $data['color'],
-                                'start_at' => $data['start_at'],
-                                'end_at' => $data['end_at']
-                            ]);
-
-                            return $newdeparture->id;
-                        })
-                        ->afterStateUpdated(function (Set $set, Get $get) {
-                            $newdate = Departure::findOrfail($get('departure_id'));
-                            $set('start_date', $newdate->start_at);
-                        }), */
                     Forms\Components\DatePicker::make('start_date')
                         ->label('F.Inicio')
                         ->required(),
@@ -581,6 +545,16 @@ class ProgrammingResource extends Resource
                     ->alignment(Alignment::Center)
                     ->numeric()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('course_type')
+                    ->label('Tipo')
+                    ->icon('heroicon-m-rectangle-stack')
+                    ->color(fn (string $state): string => match ($state) {
+                        'Bonificado' => 'success',
+                        'Gestionado' => 'info',
+                        'Impartido' => 'warning',
+                        'Privado' => 'danger'
+                    })
+                    ->size(TextColumn\TextColumnSize::ExtraSmall),
                 Tables\Columns\TextColumn::make('communication_date')
                     ->label('Comunicación')
                     ->size(TextColumn\TextColumnSize::ExtraSmall)
@@ -643,9 +617,6 @@ class ProgrammingResource extends Resource
                     ->alignment(Alignment::Center)
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('course_type')
-                    ->label('Tipo')
-                    ->size(TextColumn\TextColumnSize::ExtraSmall),
                 Tables\Columns\TextColumn::make('cost')
                     ->label('Coste')
                     ->size(TextColumn\TextColumnSize::ExtraSmall)
