@@ -8,8 +8,8 @@
         "php": "^8.2",
         "bezhansalleh/filament-shield": "^3.3.4",
         "saade/filament-fullcalendar":"^3.2.2",
-        "filament/actions": "v3.2.123",
-        "filament/filament": "^v3.2.123",
+        "filament/actions": "v3.2.132",
+        "filament/filament": "v3.2.132",
         "laravel/framework": "^v11.30.0",
         "laravel/tinker": "^v2.10.0",
         "pxlrbt/filament-excel": "^v2.3.4"
