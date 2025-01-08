@@ -55,19 +55,13 @@ class ProgrammingResource extends Resource
     //Obtenemos todas de registros existentes
     public static function getNavigationBadge(): ?string
     {
-        return static::getModel()::count();
-    }
-
-    //Mostramos solo registros del usuario conectado
-    public static function getEloquentQuery(): Builder
-    {
         if (Auth::user()->hasRole('panel_user')) {
-            return parent::getEloquentQuery()->where('modality', 'TF');
+            return parent::getEloquentQuery()->where('modality', 'tf')->count();
         } elseif (Auth::user()->hasRole('panel_user_presencial')) {
-            return parent::getEloquentQuery()->where('modality', '=','P')->Orwhere('modality', '=', 'M')->Orwhere('modality', '=', 'AV');
+            return parent::getEloquentQuery()->where('modality', 'P')->orWhere('modality','M')->orWhere('modality','AV')->count();
         } else {
-            return parent::getEloquentQuery();
-        }   
+            return static::getModel()::count();
+        }
     }
 
     public static function form(Form $form): Form
@@ -659,6 +653,14 @@ class ProgrammingResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
+            //Mostramos cursos correspondientes al técnico conectado
+            ->modifyQueryUsing(function (Builder $query) {
+                if (Auth::user()->hasRole('panel_user')) {
+                    return $query->where('modality', 'TF');
+                } elseif (Auth::user()->hasRole('panel_user_presencial')) {
+                    return $query->where('modality', '=','P')->Orwhere('modality', '=', 'M')->Orwhere('modality', '=', 'AV');
+                }
+            })
             ->filters([
                 Filter::make('F_Inicio')
                     ->label('Hola')
@@ -732,7 +734,7 @@ class ProgrammingResource extends Resource
                     }
                 }
             )
-            ->defaultSort('start_date', 'asc');
+            /* ->defaultSort('start_date', 'asc') */;
     }
 
     public static function getRelations(): array
