@@ -4,12 +4,16 @@ namespace App\Filament\Widgets;
 
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
+use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 use Carbon\Carbon;
 
 use App\Models\Programming;
 
 class DepartureDatesOverview extends BaseWidget
 {
+    use HasWidgetShield;
+    
+    protected ?string $heading = 'Salidas Programadas TF';
     protected static ?int $sort = 2;
     
     protected function getStats(): array

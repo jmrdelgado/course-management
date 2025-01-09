@@ -4,12 +4,15 @@ namespace App\Filament\Widgets;
 
 use Filament\Widgets\ChartWidget;
 use Carbon\Carbon;
+use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 
 use App\Models\Departure;
 
 class DepartureChart extends ChartWidget
 {
-    protected static ?string $heading = 'Salidas Programadas por Meses';
+    use HasWidgetShield;
+
+    protected static ?string $heading = 'Total Salidas Programadas por Meses';
     protected static bool $isLazy = true;
     protected static string $color = 'info';
     protected static ?int $sort = 3;

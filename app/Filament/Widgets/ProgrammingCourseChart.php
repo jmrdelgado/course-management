@@ -4,12 +4,15 @@ namespace App\Filament\Widgets;
 
 use Filament\Widgets\ChartWidget;
 use Carbon\Carbon;
+use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 
 use App\Models\Programming;
 
 class ProgrammingCourseChart extends ChartWidget
 {
-    protected static ?string $heading = 'Cursos Programados Por Meses';
+    use HasWidgetShield;
+
+    protected static ?string $heading = 'Total Cursos Programados Por Meses';
     protected static bool $isLazy = true;
     protected static ?int $sort = 4;
  
