@@ -653,14 +653,6 @@ class ProgrammingResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
-            //Mostramos cursos correspondientes al técnico conectado
-            ->modifyQueryUsing(function (Builder $query) {
-                if (Auth::user()->hasRole('panel_user')) {
-                    return $query->where('modality', 'TF');
-                } elseif (Auth::user()->hasRole('panel_user_presencial')) {
-                    return $query->where('modality', '=','P')->Orwhere('modality', '=', 'M')->Orwhere('modality', '=', 'AV');
-                }
-            })
             ->filters([
                 Filter::make('F_Inicio')
                     ->label('Hola')
@@ -686,6 +678,7 @@ class ProgrammingResource extends Resource
                     ->relationship('coordinator', 'name')
                     ->label('Coordinador'),
                 SelectFilter::make('modality')
+                    ->multiple()
                     ->options([
                         'P' => 'P',
                         'M' => 'M',
@@ -710,6 +703,7 @@ class ProgrammingResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
                 Tables\Actions\ReplicateAction::make()
             ])
             ->bulkActions([
@@ -734,7 +728,7 @@ class ProgrammingResource extends Resource
                     }
                 }
             )
-            /* ->defaultSort('start_date', 'asc') */;
+            ->defaultSort('start_date', 'asc');
     }
 
     public static function getRelations(): array
