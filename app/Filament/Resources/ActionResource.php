@@ -168,16 +168,9 @@ class ActionResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
-            //Mostramos registros correspondientes al técnico conectado
-            ->modifyQueryUsing(function (Builder $query) {
-                if (Auth::user()->hasRole('panel_user')) {
-                    return $query->where('modality', 'TF');
-                } elseif (Auth::user()->hasRole('panel_user_presencial')) {
-                    return $query->where('modality', '=','P')->Orwhere('modality', '=', 'M')->Orwhere('modality', '=', 'AV');
-                }
-            })
             ->filters([
                 SelectFilter::make('modality')
+                ->multiple()
                     ->options(
                         [
                             'P' => 'P',
@@ -190,7 +183,7 @@ class ActionResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\DeleteAction::make()
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
