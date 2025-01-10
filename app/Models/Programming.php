@@ -19,6 +19,7 @@ class Programming extends Model
 
     protected $fillable = [
         'naction',
+        'denomination',
         'ngroup',
         'action_id',
         'modality',
