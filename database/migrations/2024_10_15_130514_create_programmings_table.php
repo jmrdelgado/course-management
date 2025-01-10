@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('programmings', function (Blueprint $table) {
             $table->id();
             $table->string('naction', 6);
+            $table->string('denomination');
             $table->string('ngroup', 6);
             $table->string('cod_fundae', 8)->default(0);
             $table->foreignId('action_id')->constrained()->onUpdate('cascade');

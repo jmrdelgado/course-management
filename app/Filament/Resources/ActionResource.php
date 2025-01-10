@@ -181,6 +181,7 @@ class ActionResource extends Resource
                     )
                     ->label('Modalidad'),
             ])
+            ->persistFiltersInSession()
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make()

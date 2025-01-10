@@ -71,8 +71,8 @@ class ProgrammingResource extends Resource
                 Section::make('Acción Formativa')
                 ->schema([
                     Forms\Components\Select::make('action_id')
-                        ->label('Denominación')
-                        ->relationship('action', 'denomination')
+                        ->label('Nº de Acción')
+                        ->relationship('action', 'naction')
                         ->preload()
                         ->live()
                         ->createOptionForm([
@@ -153,6 +153,7 @@ class ProgrammingResource extends Resource
                         })
                         ->afterStateUpdated(function (Set $set, Get $get) {
                             $action = Action::findOrfail($get('action_id'));                
+                            $set('denomination', $action->denomination);
                             $set('naction', $action->naction);
                             if ($action->naction == '0000') {
                                 $set('ngroup', '0000');
@@ -168,9 +169,14 @@ class ProgrammingResource extends Resource
                         })
                         ->searchable()
                         ->required()
-                        ->optionsLimit(5)
+                        ->optionsLimit(10),
+                    Forms\Components\TextInput::make('denomination')
+                    ->label('Denominación')
+                    ->required()
+                    ->readonly(),
                 ])
-                ->compact(),
+                ->compact()
+                ->columns(2),
                 Section::make('Datos identificativos')
                 ->schema([
                     Forms\Components\TextInput::make('cod_fundae')
@@ -194,6 +200,17 @@ class ProgrammingResource extends Resource
                         ->required()
                         ->maxLength(255)
                         ->readonly(),
+                    Forms\Components\Select::make('course_type')
+                        ->label('Tipo Curso')
+                        ->options([
+                            'Bonificado' => 'Bonificado',
+                            'Gestionado' => 'Gestionado',
+                            'Impartido' => 'Impartido',
+                            'Privado' => 'Privado'
+                        ])
+                        ->required()
+                        ->allowHtml()
+                        ->optionsLimit(5),
                     Forms\Components\TextInput::make('nhoursp')
                         ->label('Horas P.')
                         ->required()
@@ -209,12 +226,6 @@ class ProgrammingResource extends Resource
                         ->required()
                         ->numeric()
                         ->readonly(),
-                    Forms\Components\Select::make('platform_id')
-                        ->label('Plataforma')
-                        ->relationship('platform', 'name')
-                        ->preload()
-                        ->required()
-                        ->optionsLimit(5),
                     Forms\Components\TextInput::make('number_students')
                         ->label('Nº Alumnos')
                         ->required()
@@ -231,16 +242,11 @@ class ProgrammingResource extends Resource
                                 $set('cost', 0);
                             }
                         }),
-                    Forms\Components\Select::make('course_type')
-                        ->label('Tipo Curso')
-                        ->options([
-                            'Bonificado' => 'Bonificado',
-                            'Gestionado' => 'Gestionado',
-                            'Impartido' => 'Impartido',
-                            'Privado' => 'Privado'
-                        ])
+                    Forms\Components\Select::make('platform_id')
+                        ->label('Plataforma')
+                        ->relationship('platform', 'name')
+                        ->preload()
                         ->required()
-                        ->allowHtml()
                         ->optionsLimit(5),
                     Forms\Components\TextInput::make('supplier')
                         ->label('Proveedor')
@@ -701,6 +707,7 @@ class ProgrammingResource extends Resource
                     ])
                     ->label('Tipo Curso')                
             ])
+            ->persistFiltersInSession()
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
