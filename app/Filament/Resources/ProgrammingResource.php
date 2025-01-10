@@ -707,6 +707,7 @@ class ProgrammingResource extends Resource
                     ])
                     ->label('Tipo Curso')                
             ])
+            ->persistFiltersInSession()
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
