@@ -3,7 +3,7 @@
 }
 
 .my-line-bg-canceled {
-    background-color: coral !important;
+    background-color: rgb(201, 0, 0) !important;
 }
 
 .before\:w-0\.5:before {
