@@ -29,8 +29,9 @@ use Illuminate\Support\Facades\Auth;
 
 use Filament\Support\Enums\Alignment;
 use Filament\Forms\Components\Section;
-use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Indicator;
 
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ColorColumn;
 use Filament\Forms\Components\DatePicker;
 use Filament\Tables\Columns\ToggleColumn;
@@ -660,12 +661,28 @@ class ProgrammingResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                Filter::make('F_Inicio')
-                    ->label('Hola')
+                Filter::make('Desde_Hasta')
                     ->form([
-                        DatePicker::make('start_date')->label('Inicio'),
-                        DatePicker::make('end_date')->label('Fin'),
+                        DatePicker::make('start_date')->label('Rango Fechas')
+                        ->prefix('F.Inicio'),
+                        DatePicker::make('end_date')->label('')
+                        ->prefix('F.Fin'),
                     ])
+                    ->indicateUsing(function (array $data): array {
+                        $indicators = [];
+                 
+                        if ($data['start_date'] ?? null) {
+                            $indicators[] = Indicator::make('Desde: ' . Carbon::parse($data['start_date'])->format('d-m-Y'))
+                                ->removeField('from');
+                        }
+                 
+                        if ($data['end_date'] ?? null) {
+                            $indicators[] = Indicator::make('Hasta: ' . Carbon::parse($data['end_date'])->format('d-m-Y'))
+                                ->removeField('until');
+                        }
+                 
+                        return $indicators;
+                    })
                     ->query(function (Builder $query, array $data): Builder {
                         return $query
                             ->when(
@@ -675,6 +692,24 @@ class ProgrammingResource extends Resource
                             ->when(
                                 $data['end_date'],
                                 fn (Builder $query, $date): Builder => $query->whereDate('end_date', '<=', $date),
+                            );
+                    }),
+                Filter::make('Salidas')
+                    ->form([
+                        DatePicker::make('start_date')->label('Salidas'),
+                    ])
+                    ->indicateUsing(function (array $data): ?string {
+                        if (! $data['start_date']) {
+                            return null;
+                        }
+                 
+                        return 'F.Salida: ' . Carbon::parse($data['start_date'])->format('d-m-Y');
+                    })
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['start_date'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('start_date', '=', $date),
                             );
                     }),
                 SelectFilter::make('tutors')
