@@ -12,8 +12,9 @@ class ProgrammingCourseChart extends ChartWidget
 {
     use HasWidgetShield;
 
-    protected static ?string $heading = 'Total Cursos Programados Por Meses';
+    protected static ?string $heading = 'Total Cursos Programados. Modalidad: P, M, AV';
     protected static bool $isLazy = true;
+    protected static string $color = 'danger';
     protected static ?int $sort = 4;
  
     protected function getData(): array
@@ -22,6 +23,9 @@ class ProgrammingCourseChart extends ChartWidget
         
         $records = Programming::whereYear('start_date', $fechaActual->year)
             ->selectRaw('MONTH(start_date) as month, COUNT(*) AS totalreg')
+            ->where('modality','P')
+            ->orWhere('modality', 'M')
+            ->orWhere('modality', 'AV')
             ->groupBy('month')
             ->get();
 

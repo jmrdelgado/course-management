@@ -6,13 +6,13 @@ use Filament\Widgets\ChartWidget;
 use Carbon\Carbon;
 use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 
-use App\Models\Departure;
+use App\Models\Programming;
 
 class DepartureChart extends ChartWidget
 {
     use HasWidgetShield;
 
-    protected static ?string $heading = 'Total Salidas Programadas por Meses';
+    protected static ?string $heading = 'Total Cursos Programados. Modalidad: TF';
     protected static bool $isLazy = true;
     protected static string $color = 'info';
     protected static ?int $sort = 3;
@@ -21,8 +21,14 @@ class DepartureChart extends ChartWidget
     {
         $fechaActual = Carbon::now();
 
-        $records = Departure::whereYear('start_at', $fechaActual->year)
+        /* $records = Departure::whereYear('start_at', $fechaActual->year)
             ->selectRaw('MONTH(start_at) as month, COUNT(*) AS totalreg')
+            ->groupBy('month')
+            ->get(); */
+
+        $records = Programming::whereYear('start_date', $fechaActual->year)
+            ->selectRaw('MONTH(start_date) as month, COUNT(*) AS totalreg')
+            ->where('modality','TF')
             ->groupBy('month')
             ->get();
 
@@ -35,7 +41,7 @@ class DepartureChart extends ChartWidget
         return [
             'datasets' => [
                 [
-                    'label' => 'Total Salidas Programadas por Mes',
+                    'label' => 'Total Cursos Programados por Mes',
                     'data' => $data,
                 ],
             ],

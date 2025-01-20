@@ -31,6 +31,7 @@ class Programming extends Model
         'start_date',
         'end_date',
         'number_students',
+        'sionline',
         'company_id',
         'groupcompany',
         'observations',

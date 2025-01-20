@@ -27,6 +27,7 @@ return new class extends Migration
             $table->date('start_date');
             $table->date('end_date');
             $table->integer('number_students');
+            $table->boolean('sionline')->default(false);
             $table->foreignId('company_id')->constrained()->onUpdate('cascade');
             $table->string('groupcompany')->nullable();
             $table->longText('observations')->nullable();
