@@ -503,6 +503,9 @@ class ProgrammingResource extends Resource
                                 $set('incident', false);
                             }
                         }),
+                    Forms\Components\Toggle::make('sionline')
+                        ->label('SIONLINE')
+                        ->required(),
                 ])
                 ->compact()
                 ->columns(5),
@@ -580,6 +583,8 @@ class ProgrammingResource extends Resource
                     ->alignment(Alignment::Center)
                     ->numeric()
                     ->sortable(),
+                Tables\Columns\ToggleColumn::make('sionline')
+                    ->label('SIONLINE'),
                 Tables\Columns\TextColumn::make('company.company')
                     ->label('Empresa')
                     ->size(TextColumn\TextColumnSize::ExtraSmall)
